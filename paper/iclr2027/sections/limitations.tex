@@ -1,0 +1,10 @@
+\section{Limitations, Ethics, and Reproducibility}
+
+\paragraph{Limitations.}
+\benchmark{} depends on the quality of source event annotations and the realism of multiplexed episodes. Synthetic stream alignment cannot capture every deployment artifact, such as camera outages, adversarial behavior, privacy masking, or operator feedback. The current \method{} is intentionally lightweight; learned policies may outperform it once sufficient logged data is available.
+
+\paragraph{Ethics.}
+Video monitoring can create privacy, civil liberties, and bias risks. We position this work as a benchmark for compute-aware perception allocation, not as a blanket endorsement of surveillance deployment. Any real deployment should minimize data retention, support audit trails, respect local law and consent requirements, and evaluate disparate false-alarm rates across environments and populations.
+
+\paragraph{Reproducibility.}
+The benchmark core, manifest schema, policies, metric code, and synthetic smoke tests are released with the paper. Real video datasets are referenced through manifest converters rather than redistributed. All VLM outputs used for benchmark evaluation should be cached with model name, checkpoint, prompt, decoding settings, frame sampling, and timestamp metadata.

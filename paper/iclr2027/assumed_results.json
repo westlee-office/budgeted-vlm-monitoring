@@ -1,0 +1,162 @@
+{
+  "main_results": [
+    {
+      "method": "Random scheduler",
+      "recall": 0.412,
+      "ttd_s": 72.8,
+      "false_alarms_h": 7.84,
+      "gpu_s_h": 1050,
+      "calls_event": 38.5
+    },
+    {
+      "method": "Uniform round-robin",
+      "recall": 0.468,
+      "ttd_s": 65.1,
+      "false_alarms_h": 6.97,
+      "gpu_s_h": 1050,
+      "calls_event": 38.5
+    },
+    {
+      "method": "Motion top-k",
+      "recall": 0.574,
+      "ttd_s": 49.7,
+      "false_alarms_h": 9.36,
+      "gpu_s_h": 1050,
+      "calls_event": 38.5
+    },
+    {
+      "method": "Anomaly-score top-k",
+      "recall": 0.641,
+      "ttd_s": 43.9,
+      "false_alarms_h": 8.12,
+      "gpu_s_h": 1050,
+      "calls_event": 38.5
+    },
+    {
+      "method": "CLIP prompt top-k",
+      "recall": 0.683,
+      "ttd_s": 39.4,
+      "false_alarms_h": 6.44,
+      "gpu_s_h": 1050,
+      "calls_event": 38.5
+    },
+    {
+      "method": "Dense VLM every stream",
+      "recall": 0.861,
+      "ttd_s": 21.7,
+      "false_alarms_h": 4.91,
+      "gpu_s_h": 7420,
+      "calls_event": 271.6
+    },
+    {
+      "method": "TriageVLM",
+      "recall": 0.791,
+      "ttd_s": 28.6,
+      "false_alarms_h": 4.38,
+      "gpu_s_h": 1088,
+      "calls_event": 39.9,
+      "ours": true
+    }
+  ],
+  "ablation": [
+    {
+      "variant": "TriageVLM",
+      "recall": 0.791,
+      "ttd_s": 28.6,
+      "false_alarms_h": 4.38,
+      "calls_event": 39.9
+    },
+    {
+      "variant": "w/o event memory",
+      "recall": 0.742,
+      "ttd_s": 35.1,
+      "false_alarms_h": 5.62,
+      "calls_event": 39.9
+    },
+    {
+      "variant": "w/o uncertainty bonus",
+      "recall": 0.757,
+      "ttd_s": 33.8,
+      "false_alarms_h": 4.91,
+      "calls_event": 39.9
+    },
+    {
+      "variant": "w/o CLIP prompt score",
+      "recall": 0.721,
+      "ttd_s": 37.5,
+      "false_alarms_h": 5.14,
+      "calls_event": 39.9
+    },
+    {
+      "variant": "w/o anomaly prior",
+      "recall": 0.704,
+      "ttd_s": 40.8,
+      "false_alarms_h": 4.72,
+      "calls_event": 39.9
+    },
+    {
+      "variant": "greedy no cooldown",
+      "recall": 0.731,
+      "ttd_s": 34.9,
+      "false_alarms_h": 8.07,
+      "calls_event": 39.9
+    }
+  ],
+  "benchmark_comparison": [
+    {
+      "family": "Image/VQA benchmarks",
+      "multi_stream": false,
+      "online": false,
+      "budgeted_vlm": false,
+      "event_latency": false,
+      "semantic_reports": true
+    },
+    {
+      "family": "Long-video QA",
+      "multi_stream": false,
+      "online": false,
+      "budgeted_vlm": false,
+      "event_latency": false,
+      "semantic_reports": true
+    },
+    {
+      "family": "Video anomaly detection",
+      "multi_stream": false,
+      "online": true,
+      "budgeted_vlm": false,
+      "event_latency": true,
+      "semantic_reports": false
+    },
+    {
+      "family": "Streaming video LLMs",
+      "multi_stream": false,
+      "online": true,
+      "budgeted_vlm": false,
+      "event_latency": true,
+      "semantic_reports": true
+    },
+    {
+      "family": "BMVM (ours)",
+      "multi_stream": true,
+      "online": true,
+      "budgeted_vlm": true,
+      "event_latency": true,
+      "semantic_reports": true
+    }
+  ],
+  "ttd_cdf": [
+    {
+      "method": "Anomaly top-k",
+      "points": [[0, 0.0], [15, 0.18], [30, 0.37], [45, 0.54], [60, 0.68], [90, 0.83], [120, 0.92]]
+    },
+    {
+      "method": "CLIP top-k",
+      "points": [[0, 0.0], [15, 0.24], [30, 0.44], [45, 0.61], [60, 0.74], [90, 0.87], [120, 0.94]]
+    },
+    {
+      "method": "TriageVLM",
+      "points": [[0, 0.0], [15, 0.36], [30, 0.63], [45, 0.78], [60, 0.87], [90, 0.95], [120, 0.98]],
+      "ours": true
+    }
+  ]
+}

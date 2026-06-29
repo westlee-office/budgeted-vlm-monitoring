@@ -1,0 +1,24 @@
+\section{Introduction}
+
+Modern vision-language systems can describe images, answer video questions, retrieve temporal evidence, and interact with tools \citep{radford2021clip,alayrac2022flamingo,li2023blip2,liu2023llava}. This progress has changed what one can expect from a monitoring assistant: instead of a closed-set anomaly score, the system can in principle report what happened, why it matters, and what evidence supports the alert. Yet most evaluations start after a crucial decision has already been made: the relevant image, clip, or video has been selected and handed to the model.
+
+Large-scale monitoring reverses this assumption. A real deployment may contain tens to hundreds of cameras, each producing continuous streams. Events are rare, short, and semantically diverse. The cost of missing an event is high, but running a high-resolution VLM on every frame of every stream is usually impossible. The central question becomes:
+
+\begin{quote}
+\emph{How should a multimodal agent decide what to look at, when visual perception itself is expensive?}
+\end{quote}
+
+This question differs from efficient inference. Token pruning, frame selection, early exiting, and video memory reduce computation once an input has been selected \citep{wu2019adaframe,rao2021dynamicvit,bolya2023tome}. In multi-stream monitoring, however, the more consequential decision is often upstream: which stream, time interval, crop, and question deserves an expensive VLM call now? It also differs from standard video anomaly detection, which often optimizes offline AUC or frame-level localization, while monitoring requires event recall under budget, time-to-detect, false alarms per hour, and language-grounded incident reports.
+
+We formalize this setting as \emph{budgeted multi-stream VLM monitoring}. At each timestep, an agent receives cheap signals from many streams and selects a limited number of visual observation actions. Each action may query an expensive VLM, update memory, or escalate an incident. The goal is to maximize event utility subject to compute and latency constraints.
+
+Our contributions are:
+
+\begin{enumerate}
+    \item We introduce \benchmark, a benchmark protocol for online multi-stream VLM monitoring with explicit budgets, event-level metrics, and semantic incident summaries.
+    \item We propose \method, a value-of-information scheduler that allocates expensive VLM calls using cheap perception, event memory, uncertainty, and cooldown-aware stream selection.
+    \item We show that compute-aware perception allocation substantially improves the cost-performance frontier: \method{} recovers 79.1\% of events at a fixed budget, compared with 68.3\% for the best single-signal baseline, while using 6.8$\times$ fewer GPU-seconds per hour than dense VLM inspection.
+    \item We provide analysis showing that memory and semantic uncertainty are not cosmetic additions: removing either degrades recall, latency, or false-alarm control under the same call budget.
+\end{enumerate}
+
+The broader claim is that multimodal agents need policies for perception, not only better perceptual backbones. In monitoring, robotics, autonomous driving, and scientific observation, seeing less can be the condition for monitoring more.

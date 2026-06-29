@@ -1,0 +1,9 @@
+{
+  "manifest": "data/synthetic/smoke.json",
+  "policies": ["random", "uniform", "motion_topk", "anomaly_topk", "clip_topk", "voi"],
+  "query_budget_per_step": 4,
+  "cheap_scan_gpu_s_per_stream": 0.0015,
+  "vlm_gpu_s_per_call": 0.65,
+  "detection_threshold": 0.62,
+  "seed": 7
+}

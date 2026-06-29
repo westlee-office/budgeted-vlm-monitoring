@@ -1,0 +1,11 @@
+{
+  "dataset": "ucf_crime",
+  "paper": "Real-World Anomaly Detection in Surveillance Videos",
+  "venue": "CVPR 2018",
+  "source_url": "https://openaccess.thecvf.com/content_cvpr_2018/html/Sultani_Real-World_Anomaly_Detection_CVPR_2018_paper.html",
+  "role": "primary surveillance benchmark",
+  "expected_raw_dir": "data/raw/ucf_crime",
+  "manifest_output": "data/manifests/ucf_crime_multistream.json",
+  "default_step_s": 2.0,
+  "default_stream_counts": [64, 128, 256]
+}

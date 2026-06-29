@@ -1,0 +1,13 @@
+\begin{tabular}{lrrrrr}
+\toprule
+Method & Recall@B $\uparrow$ & TTD (s) $\downarrow$ & FA/h $\downarrow$ & GPU-s/h $\downarrow$ & VLM calls/event $\downarrow$ \\
+\midrule
+Random scheduler & 41.2 & 72.8 & 7.84 & 1050 & 38.5 \\
+Uniform round-robin & 46.8 & 65.1 & 6.97 & 1050 & 38.5 \\
+Motion top-k & 57.4 & 49.7 & 9.36 & 1050 & 38.5 \\
+Anomaly-score top-k & 64.1 & 43.9 & 8.12 & 1050 & 38.5 \\
+CLIP prompt top-k & 68.3 & 39.4 & 6.44 & 1050 & 38.5 \\
+Dense VLM every stream & 86.1 & 21.7 & 4.91 & 7420 & 271.6 \\
+\textbf{TriageVLM} & 79.1 & 28.6 & 4.38 & 1088 & 39.9 \\
+\bottomrule
+\end{tabular}

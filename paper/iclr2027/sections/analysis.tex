@@ -1,0 +1,10 @@
+\section{Analysis}
+
+\paragraph{Why does scheduling matter?}
+Single-signal policies are brittle because monitoring events are diverse. Motion captures falls and fights but overreacts to benign crowd flow. Anomaly scores capture out-of-distribution activity but can be slow to react to semantically important events. CLIP prompt similarity helps open-vocabulary incidents but depends on prompt coverage. \method{} benefits from combining weak cues and letting memory accumulate evidence across time.
+
+\paragraph{Dense perception is not the right oracle.}
+Dense VLM inspection remains useful as an upper-cost reference, but it is a poor operational target. The relevant frontier is not maximum recall at any cost; it is event utility per unit of scarce perception. This distinction changes both method design and benchmark design. A monitoring agent should be rewarded for spending VLM calls where they change decisions.
+
+\paragraph{What should future models learn?}
+The results point to a broader learning problem: multimodal agents should learn policies over visual observation actions. The policy can be trained from logged monitoring traces, synthetic multiplexed episodes, or offline value estimates. Better VLMs improve the semantic verifier, but without allocation they do not solve the multi-stream bottleneck.

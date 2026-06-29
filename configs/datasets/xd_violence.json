@@ -1,0 +1,12 @@
+{
+  "dataset": "xd_violence",
+  "paper": "Not only Look, but also Listen: Learning Multimodal Violence Detection under Weak Supervision",
+  "venue": "ECCV 2020",
+  "source_url": "https://roc-ng.github.io/XD-Violence/",
+  "role": "semantic violence and audio-visual robustness benchmark",
+  "expected_raw_dir": "data/raw/xd_violence",
+  "manifest_output": "data/manifests/xd_violence_multistream.json",
+  "default_step_s": 2.0,
+  "default_stream_counts": [64, 128, 256],
+  "optional_audio_signal": true
+}

@@ -1,0 +1,33 @@
+\section{\method}
+
+\method{} is a hierarchical monitoring policy. It does not replace the VLM; instead, it decides when the VLM is worth calling.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.96\linewidth}{!}{\input{figures/architecture_tikz}}
+\caption{\method{} scans streams cheaply, then allocates scarce VLM calls using value-of-information estimates, memory, and uncertainty.}
+\label{fig:architecture}
+\end{figure}
+
+\paragraph{Cheap perception layer.}
+For each stream $s_i$ and timestep $t$, the system computes a vector
+$x_{i,t} = [m_{i,t}, a_{i,t}, p_{i,t}]$, where $m$ is motion or activity, $a$ is a lightweight anomaly score, and $p$ is open-vocabulary incident prompt similarity. These signals are noisy but cheap enough to run broadly.
+
+\paragraph{Event memory.}
+The memory state $h_{i,t}$ stores recent evidence for each stream: prior detections, unresolved suspicious segments, false-positive history, and recency of inspection. Memory matters because a single frame-level spike may be a distractor, while temporally persistent weak evidence may warrant a VLM query.
+
+\paragraph{Value-of-information score.}
+At each timestep, \method{} estimates the marginal utility of querying stream $i$:
+
+\[
+V_{i,t} =
+w_a a_{i,t} + w_m m_{i,t} + w_p p_{i,t}
++ w_h h_{i,t}
++ w_u U_{i,t}
+- w_r R_{i,t},
+\]
+
+where $U_{i,t}$ is uncertainty around the decision boundary and $R_{i,t}$ is a cooldown penalty for repeated queries. The policy selects the top actions under the current call budget. If a VLM verifies an event, memory is strengthened; if the alert is false, that stream's short-term risk is suppressed.
+
+\paragraph{Incident report.}
+Selected stream segments are passed to the VLM with a structured prompt asking for event type, evidence, uncertainty, and whether operator escalation is justified. This makes the output useful for monitoring rather than only binary anomaly detection.

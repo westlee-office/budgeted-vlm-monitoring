@@ -1,0 +1,16 @@
+\section{Related Work}
+
+\paragraph{Vision-language models.}
+Contrastive image-text pretraining and multimodal instruction tuning have produced strong general-purpose visual representations and assistants \citep{radford2021clip,jia2021align,alayrac2022flamingo,li2022blip,li2023blip2,liu2023llava}. These models provide the semantic layer needed for open-vocabulary monitoring, but they are usually evaluated with preselected visual inputs. Our work treats VLM access itself as a scarce action.
+
+\paragraph{Video and long-video understanding.}
+Video transformers and masked video learners improved spatiotemporal representation learning \citep{bertasius2021timesformer,arnab2021vivit,liu2022videoswin,tong2022videomae}. Long-video VLMs and memory-based systems address context length, temporal grounding, and streaming interaction \citep{song2024moviechat,chen2024videollmonline,mangalam2023egoschema,fu2025videomme}. These works typically focus on one video or a small set of videos. Multi-stream monitoring additionally requires cross-stream allocation under a real-time budget.
+
+\paragraph{Efficient perception.}
+Adaptive frame selection, token sparsification, token merging, and early exits reduce inference cost \citep{wu2019adaframe,rao2021dynamicvit,ryoo2021tokenlearner,bolya2023tome}. Such methods are complementary to \method: they make a selected observation cheaper, while our scheduler decides which observations should be selected in the first place.
+
+\paragraph{Video anomaly detection.}
+Surveillance anomaly detection benchmarks and methods study rare events, weak supervision, and abnormality scoring \citep{sultani2018ucfcrime,liu2018futureframe,park2020memoryguided,tian2021rtfm,feng2021mist}. Their datasets are a natural substrate for monitoring, but the standard metrics often omit VLM-call budgets, natural-language incident reports, and multi-stream scheduling.
+
+\paragraph{Agentic systems and tool use.}
+Language agents have been studied through tool use, reasoning-action loops, and search-based planning \citep{yao2023react,schick2023toolformer,yao2023tot}. We reinterpret visual observation as an agent action: the agent can spend compute to look at a stream, ask a visual question, update memory, or defer. This exposes perception allocation as a first-class decision problem.

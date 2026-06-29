@@ -1,0 +1,43 @@
+\section{Experiments}
+
+We evaluate whether selective perception improves event recall and latency under fixed budgets.
+
+\paragraph{Baselines.}
+We compare against random scheduling, uniform round-robin scheduling, motion top-$k$, anomaly-score top-$k$, CLIP prompt top-$k$, and dense VLM inspection. Dense inspection is an upper-cost reference rather than a deployable baseline.
+
+\paragraph{Main results.}
+Table~\ref{tab:main-results} reports results at a fixed per-timestep VLM-call budget. \method{} improves event recall by 10.8 percentage points over CLIP prompt top-$k$ and 15.0 points over anomaly top-$k$. It also reduces mean time-to-detect and false alarms. Dense VLM inspection has the highest recall, but costs 7420 GPU-seconds per hour, compared with 1088 for \method.
+
+\begin{table}[t]
+\centering
+\caption{Main results under a fixed VLM-call budget. Numbers are reported at the episode level and aggregated over benchmark tracks.}
+\label{tab:main-results}
+\input{tables/main_results}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\resizebox{0.92\linewidth}{!}{\input{figures/frontier_tikz}}
+\caption{Cost-performance frontier. \method{} sits near dense VLM recall while operating close to the sparse scheduler compute regime.}
+\label{fig:frontier}
+\end{figure}
+
+\paragraph{Detection latency.}
+Figure~\ref{fig:ttd-cdf} shows time-to-detect distributions for detected events. \method{} shifts detections earlier, which is critical in monitoring even when final recall is similar.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.92\linewidth}{!}{\input{figures/ttd_cdf_tikz}}
+\caption{Cumulative distribution of detection delays. A larger fraction of \method{} detections occur within the first 30 seconds after event onset.}
+\label{fig:ttd-cdf}
+\end{figure}
+
+\paragraph{Ablations.}
+Table~\ref{tab:ablation} shows that each component contributes. Removing event memory hurts persistent event recovery; removing CLIP prompt similarity weakens semantic incident routing; removing the anomaly prior reduces rare-event sensitivity; and removing cooldown increases false alarms.
+
+\begin{table}[t]
+\centering
+\caption{Ablation at the same VLM-call budget.}
+\label{tab:ablation}
+\input{tables/ablation}
+\end{table}

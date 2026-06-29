@@ -1,0 +1,22 @@
+{
+  "datasets": ["ucf_crime_multistream", "xd_violence_multistream"],
+  "stream_counts": [32, 64, 128, 256],
+  "query_budgets_per_step": [1, 2, 4, 8],
+  "seeds": [7, 17, 29],
+  "policies": [
+    "random",
+    "uniform",
+    "motion_topk",
+    "anomaly_topk",
+    "clip_topk",
+    "voi"
+  ],
+  "dense_vlm_reference": true,
+  "metrics": [
+    "event_recall",
+    "mean_time_to_detect_s",
+    "false_alarms_per_hour",
+    "gpu_seconds_per_hour",
+    "vlm_calls_per_event"
+  ]
+}

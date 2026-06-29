@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "budgeted-vlm-monitoring"
+version = "0.1.0"
+description = "Benchmark and policies for budgeted multi-stream VLM monitoring."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+  {name = "Research Team"}
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = []
+vision = [
+  "opencv-python>=4.8",
+  "torch>=2.2",
+  "transformers>=4.44",
+  "pillow>=10.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

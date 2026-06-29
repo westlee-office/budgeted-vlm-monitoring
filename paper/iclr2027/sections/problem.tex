@@ -1,0 +1,30 @@
+\section{Problem Formulation}
+
+Let $\mathcal{S}=\{s_1,\ldots,s_N\}$ denote $N$ asynchronous video streams. At time $t$, each stream can provide cheap features $x_{i,t}$ such as motion activity, lightweight anomaly scores, object counts, or CLIP-style prompt similarity. The agent chooses a set of visual observation actions $A_t$ subject to budget $B_t$. An action may query a VLM on a stream segment, crop, or question:
+
+\[
+a_{i,t} = \texttt{look}(s_i, t, \Delta, r, q),
+\]
+
+where $\Delta$ is temporal extent, $r$ is resolution or region, and $q$ is an optional natural-language incident query. Each action has cost $c(a_{i,t})$ in GPU-seconds and VLM calls.
+
+The episode contains latent event intervals $\mathcal{E}=\{e_j\}$, where each event has a stream, start time, end time, label, severity, and language description. A successful monitoring agent must detect events quickly while controlling operational cost:
+
+\[
+\max_{\pi} \ \mathbb{E}\left[\sum_{e_j \in \mathcal{E}} u(e_j, \tau_j, \hat{d}_j) - \lambda_c \sum_t c(A_t) - \lambda_f F\right],
+\]
+
+where $\tau_j$ is detection delay, $\hat{d}_j$ is the generated incident description, and $F$ is the number of false alarms.
+
+We report the following metrics:
+
+\begin{itemize}
+    \item \textbf{Event Recall@Budget}: fraction of ground-truth events detected under a fixed VLM-call or GPU-time budget.
+    \item \textbf{Time-to-Detect}: delay between event start and first correct alert.
+    \item \textbf{False Alarms per Hour}: number of positive alerts without an active event, normalized by monitored time.
+    \item \textbf{GPU-Seconds per Hour}: deployment-oriented compute cost.
+    \item \textbf{VLM Calls per Event}: expensive perception usage normalized by event count.
+    \item \textbf{Incident Summary Correctness}: agreement between generated natural-language reports and event annotations or human judgments.
+\end{itemize}
+
+This formulation makes perception allocation measurable. A model that answers accurately after receiving the right clip is insufficient if it cannot decide which clip to inspect.
