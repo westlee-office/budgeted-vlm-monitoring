@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.55\linewidth,
+  height=0.32\linewidth,
+  xlabel={Number of streams},
+  ylabel={Dense GPU-s/h},
+  xtick={32,64,128,256},
+  ybar,
+  ymin=0,
+  grid=major,
+]
+\addplot+[fill=gray!25] coordinates {(32,1900) (64,3740) (128,7420) (256,14810)};
+\end{axis}
+\end{tikzpicture}

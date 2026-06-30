@@ -68,6 +68,29 @@ results/
 
 ## 4.1 Manifest Multiplexing
 
+Cheap feature cache:
+
+```bash
+python3 scripts/extract_source_motion.py \
+  --videos-csv data/manifests/ucf_videos.csv \
+  --output-csv data/features/ucf_motion.csv \
+  --sample-fps 1 \
+  --path-root .
+
+python3 scripts/extract_clip_scores.py \
+  --videos-csv data/manifests/ucf_videos.csv \
+  --prompts configs/prompts/incidents.txt \
+  --output-csv data/features/ucf_clip.csv \
+  --sample-fps 1 \
+  --batch-size 32 \
+  --device cuda
+
+python3 scripts/merge_signal_csvs.py \
+  --inputs data/features/ucf_motion.csv data/features/ucf_clip.csv \
+  --output-csv data/features/ucf_signals.csv \
+  --round-timestep 1
+```
+
 ```bash
 python3 scripts/multiplex_dataset.py \
   --videos-csv data/manifests/ucf_videos.csv \

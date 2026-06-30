@@ -151,6 +151,85 @@ def write_ttd_cdf(curves: List[Dict[str, Any]]) -> None:
     (FIGURES / "ttd_cdf_tikz.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def write_stream_scaling(rows: List[Dict[str, Any]]) -> None:
+    uniform = " ".join(f"({row['streams']},{row['uniform'] * 100})" for row in rows)
+    clip = " ".join(f"({row['streams']},{row['clip_topk'] * 100})" for row in rows)
+    ours = " ".join(f"({row['streams']},{row['triagevlm'] * 100})" for row in rows)
+    dense_cost = " ".join(f"({row['streams']},{row['dense_gpu_s_h']})" for row in rows)
+    text = r"""\begin{tikzpicture}
+\begin{axis}[
+  width=0.72\linewidth,
+  height=0.43\linewidth,
+  xlabel={Number of streams},
+  ylabel={Event Recall@B (\%)},
+  xmin=24, xmax=272,
+  ymin=30, ymax=90,
+  xtick={32,64,128,256},
+  grid=both,
+  legend style={at={(0.03,0.03)},anchor=south west,font=\scriptsize},
+]
+\addplot+[mark=square*, thick] coordinates {""" + uniform + r"""};
+\addlegendentry{Uniform}
+\addplot+[mark=triangle*, thick] coordinates {""" + clip + r"""};
+\addlegendentry{CLIP top-k}
+\addplot+[mark=star, mark size=3pt, very thick] coordinates {""" + ours + r"""};
+\addlegendentry{\method}
+\end{axis}
+\end{tikzpicture}
+"""
+    (FIGURES / "stream_scaling_tikz.tex").write_text(text, encoding="utf-8")
+
+    cost_text = r"""\begin{tikzpicture}
+\begin{axis}[
+  width=0.55\linewidth,
+  height=0.32\linewidth,
+  xlabel={Number of streams},
+  ylabel={Dense GPU-s/h},
+  xtick={32,64,128,256},
+  ybar,
+  ymin=0,
+  grid=major,
+]
+\addplot+[fill=gray!25] coordinates {""" + dense_cost + r"""};
+\end{axis}
+\end{tikzpicture}
+"""
+    (FIGURES / "dense_cost_scaling_tikz.tex").write_text(cost_text, encoding="utf-8")
+
+
+def _timeline_marks(values: List[int], y: float, color: str, label: str) -> List[str]:
+    lines = []
+    for value in values:
+        lines.append(f"\\draw[{color}, thick] ({value},{y - 0.18}) -- ({value},{y + 0.18});")
+    if values:
+        lines.append(f"\\node[anchor=west, font=\\scriptsize, {color}] at ({max(values) + 2},{y}) {{{label}}};")
+    return lines
+
+
+def write_timeline(data: Dict[str, Any]) -> None:
+    lines = [
+        "\\begin{tikzpicture}[x=0.045cm,y=0.75cm]",
+        "\\draw[->] (0,0) -- (160,0) node[right, font=\\scriptsize] {time (s)};",
+        "\\foreach \\x in {0,40,80,120,160} {\\draw (\\x,0.08) -- (\\x,-0.08) node[below, font=\\scriptsize] {\\x};}",
+    ]
+    y = 3.0
+    for stream in data["streams"]:
+        lines.append(f"\\node[anchor=east, font=\\scriptsize] at (-3,{y}) {{{stream['stream']} ({stream['label']})}};")
+        lines.append(f"\\draw[gray!50] (0,{y}) -- (160,{y});")
+        if stream.get("event_start") is not None:
+            lines.append(
+                f"\\draw[red!25, line width=5pt] ({stream['event_start']},{y}) -- ({stream['event_end']},{y});"
+            )
+            lines.append(f"\\node[font=\\scriptsize, red!70!black] at ({(stream['event_start'] + stream['event_end']) / 2},{y + 0.35}) {{event}};")
+        lines.extend(_timeline_marks(stream.get("anomaly_queries", []), y - 0.12, "blue!70!black", "anomaly top-k"))
+        lines.extend(_timeline_marks(stream.get("triage_queries", []), y + 0.12, "green!45!black", "\\method"))
+        if stream.get("triage_detection") is not None:
+            lines.append(f"\\node[star, star points=5, fill=orange!80, draw=orange!80, minimum size=4pt, inner sep=0pt] at ({stream['triage_detection']},{y + 0.45}) {{}};")
+        y -= 1.0
+    lines.extend(["\\end{tikzpicture}"])
+    (FIGURES / "timeline_tikz.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main() -> None:
     TABLES.mkdir(parents=True, exist_ok=True)
     FIGURES.mkdir(parents=True, exist_ok=True)
@@ -161,6 +240,8 @@ def main() -> None:
     write_architecture()
     write_frontier(data["main_results"])
     write_ttd_cdf(data["ttd_cdf"])
+    write_stream_scaling(data["stream_scaling"])
+    write_timeline(data["timeline"])
     print(f"Wrote assets under {PAPER}")
 
 

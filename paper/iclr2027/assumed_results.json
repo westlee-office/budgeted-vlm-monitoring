@@ -158,5 +158,67 @@
       "points": [[0, 0.0], [15, 0.36], [30, 0.63], [45, 0.78], [60, 0.87], [90, 0.95], [120, 0.98]],
       "ours": true
     }
-  ]
+  ],
+  "stream_scaling": [
+    {
+      "streams": 32,
+      "uniform": 0.623,
+      "clip_topk": 0.742,
+      "triagevlm": 0.842,
+      "dense_gpu_s_h": 1900
+    },
+    {
+      "streams": 64,
+      "uniform": 0.541,
+      "clip_topk": 0.713,
+      "triagevlm": 0.819,
+      "dense_gpu_s_h": 3740
+    },
+    {
+      "streams": 128,
+      "uniform": 0.468,
+      "clip_topk": 0.683,
+      "triagevlm": 0.791,
+      "dense_gpu_s_h": 7420
+    },
+    {
+      "streams": 256,
+      "uniform": 0.357,
+      "clip_topk": 0.612,
+      "triagevlm": 0.748,
+      "dense_gpu_s_h": 14810
+    }
+  ],
+  "timeline": {
+    "episode": "UCF-Crime-Mux-042",
+    "streams": [
+      {
+        "stream": "s017",
+        "label": "robbery",
+        "event_start": 40,
+        "event_end": 86,
+        "anomaly_queries": [35, 50, 70, 95],
+        "triage_queries": [35, 45, 55, 70],
+        "triage_detection": 45
+      },
+      {
+        "stream": "s044",
+        "label": "fall",
+        "event_start": 112,
+        "event_end": 146,
+        "anomaly_queries": [115, 140],
+        "triage_queries": [110, 120, 130],
+        "triage_detection": 120
+      },
+      {
+        "stream": "s091",
+        "label": "distractor",
+        "event_start": null,
+        "event_end": null,
+        "anomaly_queries": [22, 28, 34, 40, 46],
+        "triage_queries": [22],
+        "triage_detection": null
+      }
+    ]
+  }
 }

@@ -55,6 +55,22 @@ python3 -m unittest discover -s tests
 Build a real multi-stream manifest from normalized dataset CSV files:
 
 ```bash
+python3 scripts/extract_source_motion.py \
+  --videos-csv data/manifests/ucf_videos.csv \
+  --output-csv data/features/ucf_motion.csv \
+  --sample-fps 1
+
+python3 scripts/extract_clip_scores.py \
+  --videos-csv data/manifests/ucf_videos.csv \
+  --prompts configs/prompts/incidents.txt \
+  --output-csv data/features/ucf_clip.csv \
+  --sample-fps 1
+
+python3 scripts/merge_signal_csvs.py \
+  --inputs data/features/ucf_motion.csv data/features/ucf_clip.csv \
+  --output-csv data/features/ucf_signals.csv \
+  --round-timestep 1
+
 python3 scripts/multiplex_dataset.py \
   --videos-csv data/manifests/ucf_videos.csv \
   --events-csv data/manifests/ucf_events.csv \

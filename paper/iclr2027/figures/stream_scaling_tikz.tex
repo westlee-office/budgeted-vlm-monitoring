@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.72\linewidth,
+  height=0.43\linewidth,
+  xlabel={Number of streams},
+  ylabel={Event Recall@B (\%)},
+  xmin=24, xmax=272,
+  ymin=30, ymax=90,
+  xtick={32,64,128,256},
+  grid=both,
+  legend style={at={(0.03,0.03)},anchor=south west,font=\scriptsize},
+]
+\addplot+[mark=square*, thick] coordinates {(32,62.3) (64,54.1) (128,46.800000000000004) (256,35.699999999999996)};
+\addlegendentry{Uniform}
+\addplot+[mark=triangle*, thick] coordinates {(32,74.2) (64,71.3) (128,68.30000000000001) (256,61.199999999999996)};
+\addlegendentry{CLIP top-k}
+\addplot+[mark=star, mark size=3pt, very thick] coordinates {(32,84.2) (64,81.89999999999999) (128,79.10000000000001) (256,74.8)};
+\addlegendentry{\method}
+\end{axis}
+\end{tikzpicture}

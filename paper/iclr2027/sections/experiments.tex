@@ -32,6 +32,26 @@ Figure~\ref{fig:ttd-cdf} shows time-to-detect distributions for detected events.
 \label{fig:ttd-cdf}
 \end{figure}
 
+\paragraph{Scaling with stream count.}
+Figure~\ref{fig:stream-scaling} evaluates the same policy family as the number of simultaneous streams grows. Uniform scheduling degrades rapidly because each stream is revisited less often. CLIP prompt routing is more robust but still misses visually ambiguous events. \method{} preserves a larger fraction of event recall because memory and uncertainty keep borderline streams in the candidate set without repeatedly spending calls on distractors.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.92\linewidth}{!}{\input{figures/stream_scaling_tikz}}
+\caption{Recall under a fixed per-timestep VLM-call budget as the number of monitored streams increases.}
+\label{fig:stream-scaling}
+\end{figure}
+
+\paragraph{Qualitative timeline.}
+Figure~\ref{fig:timeline} visualizes one multi-stream episode. A single-signal anomaly scheduler repeatedly queries a distractor stream with transient activity, while \method{} uses cooldown and memory to return to unresolved event streams earlier.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.98\linewidth}{!}{\input{figures/timeline_tikz}}
+\caption{Example query timeline. Red bands denote event intervals, ticks denote VLM queries, and the star marks the first \method{} detection.}
+\label{fig:timeline}
+\end{figure}
+
 \paragraph{Ablations.}
 Table~\ref{tab:ablation} shows that each component contributes. Removing event memory hurts persistent event recovery; removing CLIP prompt similarity weakens semantic incident routing; removing the anomaly prior reduces rare-event sensitivity; and removing cooldown increases false alarms.
 
