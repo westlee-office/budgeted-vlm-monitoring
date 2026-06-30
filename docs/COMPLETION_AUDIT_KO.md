@@ -141,6 +141,6 @@ Commits:
 상태:
 
 - Tests: 12 passed.
-- PDF: built successfully; current answer-first draft is 11 pages and about 4,682 extracted words.
+- PDF: built successfully; current answer-first draft is 14 pages and about 5,828 extracted words with 64 cited references.
 - Git/GitHub: private remote exists and `main` has been pushed.
 - Remaining blocker: none for repository setup. The research blocker is replacing assumed answer-first numbers with real UCF/XD/stress-track experiment results.

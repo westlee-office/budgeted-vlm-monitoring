@@ -65,8 +65,9 @@ cd paper/iclr2027 && tectonic main.tex
 상태: 초안으로는 양호, 제출용으로는 미완
 
 - PDF: `paper/iclr2027/main.pdf`
-- page count: 11
-- extracted word count: 약 4,682 words
+- page count: 14
+- extracted word count: 약 5,828 words
+- cited references: 64
 - 구성:
   - abstract
   - introduction
@@ -95,7 +96,7 @@ cd paper/iclr2027 && tectonic main.tex
 
 - 본문은 assumed result를 실제 결과처럼 서술한다. answer-first draft 목적에는 맞지만, 실제 제출 전에는 반드시 숫자와 표현을 실험 결과로 교체해야 한다.
 - ICLR/CVPR 공식 style file이 아직 적용되지 않았다.
-- answer-first depth는 이전 9-page draft 대비 강화되었지만, top-tier 제출용으로는 실제 결과 provenance, appendix, official style, learned-policy evidence가 아직 부족하다.
+- answer-first depth와 reference coverage는 이전 9-page draft 대비 강화되었지만, top-tier 제출용으로는 실제 결과 provenance, appendix, official style, learned-policy evidence가 아직 부족하다.
 
 ### Experiment Plan
 
@@ -308,7 +309,7 @@ python3 scripts/make_paper_assets.py
 
 위험:
 
-- 현재는 article class 기반 11-page working draft다.
+- 현재는 article class 기반 14-page working draft다.
 - ICLR style, anonymity checklist, ethics/reproducibility formatting, appendix structure가 없다.
 
 개선:
