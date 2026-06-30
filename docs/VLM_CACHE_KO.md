@@ -80,3 +80,36 @@ python3 scripts/build_vlm_query_pool.py \
 ```
 
 이 query pool을 실제 VLM batch inference로 처리한 뒤, 같은 `(episode_id, stream_id, t_s)` key에 `score`를 추가한 JSONL을 `--vlm-cache`로 넣는다.
+
+## CLIP Verifier Baseline
+
+실제 VLM을 붙이기 전, CLIP prompt similarity를 verifier cache로 사용해 end-to-end evaluation path를 점검할 수 있다.
+
+```bash
+python3 scripts/run_clip_verifier_cache.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --prompts configs/prompts/incidents.txt \
+  --output data/vlm_cache/ucf_crime_multistream.jsonl \
+  --device cuda \
+  --batch-size 32
+```
+
+이 cache는 논문 main VLM 결과가 아니라 diagnostic baseline으로 취급한다.
+
+## External VLM Prediction Adapter
+
+Qwen/LLaVA/API 등 별도 batch job이 다음 JSONL을 출력했다고 가정한다.
+
+```json
+{"episode_id":"mux-00001","stream_id":"s017","t_s":122.0,"score":0.91,"summary":"A person enters a restricted area."}
+```
+
+BMVM cache로 변환:
+
+```bash
+python3 scripts/build_vlm_cache_from_predictions.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --predictions data/vlm_cache/ucf_vlm_predictions.jsonl \
+  --output data/vlm_cache/ucf_crime_multistream.jsonl \
+  --model qwen2.5-vl-7b
+```

@@ -85,6 +85,7 @@ def run_one(
     metadata_base: Dict[str, Any],
 ) -> Dict[str, Any]:
     episodes = load_manifest(manifest_path)
+    num_streams = episodes[0].num_streams if episodes else 0
     policy = POLICY_REGISTRY[policy_name](query_budget=budget_value, seed=seed)
     results = run_benchmark(
         episodes=episodes,
@@ -104,6 +105,8 @@ def run_one(
             "dataset": dataset,
             "manifest": str(manifest_path),
             "manifest_sha256": sha256_file(manifest_path),
+            "episode_count": len(episodes),
+            "num_streams": num_streams,
             "policy": policy_name,
             "query_budget_per_step": budget_value,
             "seed": seed,
@@ -145,6 +148,7 @@ def aggregate(runs: List[Dict[str, Any]], output_dir: Path) -> None:
                 "dataset": run["metadata"]["dataset"],
                 "query_budget_per_step": run["metadata"]["query_budget_per_step"],
                 "seed": run["metadata"]["seed"],
+                "num_streams": run["metadata"].get("num_streams", 0),
             }
         )
         rows.append(row)

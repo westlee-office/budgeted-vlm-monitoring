@@ -62,7 +62,7 @@ results/
 5. `scripts/build_vlm_query_pool.py`로 VLM batch candidate 생성.
 6. VLM verifier batch job으로 `data/vlm_cache/<dataset>.jsonl` 생성.
 7. `scripts/run_grid.py`로 policies x budgets x seeds 실험 실행.
-8. `assumed_results.json`을 실제 결과로 교체.
+8. `scripts/update_paper_results_from_grid.py`로 실제 결과를 paper JSON에 반영.
 9. `python3 scripts/make_paper_assets.py`.
 10. `cd paper/iclr2027 && tectonic main.tex`.
 
@@ -118,6 +118,27 @@ python3 scripts/build_vlm_query_pool.py \
   --query-budget 4
 ```
 
+Diagnostic CLIP verifier cache:
+
+```bash
+python3 scripts/run_clip_verifier_cache.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --prompts configs/prompts/incidents.txt \
+  --output data/vlm_cache/ucf_crime_multistream.jsonl \
+  --device cuda \
+  --batch-size 32
+```
+
+외부 VLM batch job 결과를 BMVM cache로 변환:
+
+```bash
+python3 scripts/build_vlm_cache_from_predictions.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --predictions data/vlm_cache/ucf_vlm_predictions.jsonl \
+  --output data/vlm_cache/ucf_crime_multistream.jsonl \
+  --model qwen2.5-vl-7b
+```
+
 ```bash
 python3 scripts/run_grid.py \
   --config configs/experiments/core_grid.json \
@@ -134,6 +155,17 @@ python3 scripts/run_grid.py \
   --vlm-cache-dir data/vlm_cache \
   --no-simulated-vlm-fallback \
   --output-dir results/grid
+```
+
+Grid 결과를 paper JSON으로 반영:
+
+```bash
+python3 scripts/update_paper_results_from_grid.py \
+  --aggregate results/grid/aggregate.json \
+  --template paper/iclr2027/assumed_results.json \
+  --output paper/iclr2027/assumed_results.json \
+  --main-budget 4 \
+  --write
 ```
 
 SLURM cluster:

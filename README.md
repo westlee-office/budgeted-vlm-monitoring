@@ -102,6 +102,18 @@ python3 scripts/run_grid.py \
   --output-dir results/grid
 ```
 
+Update the paper result JSON from completed grid output:
+
+```bash
+python3 scripts/update_paper_results_from_grid.py \
+  --aggregate results/grid/aggregate.json \
+  --template paper/iclr2027/assumed_results.json \
+  --output paper/iclr2027/assumed_results.json \
+  --main-budget 4 \
+  --write
+python3 scripts/make_paper_assets.py
+```
+
 Regenerate paper tables and figures:
 
 ```bash
