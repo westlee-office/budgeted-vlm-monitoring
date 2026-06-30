@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 
 from .policies.base import Policy
 from .policies.voi import ValueOfInformationPolicy
 from .types import Budget, CostModel, Episode, EpisodeResult, Query, StepContext, StepResult
+from .vlm_cache import VLMCache
 
 
 def _vlm_verifier_score(cheap_score: float, active_event_count: int) -> float:
@@ -19,6 +20,8 @@ def run_episode(
     budget: Budget,
     cost_model: CostModel,
     detection_threshold: float = 0.62,
+    vlm_cache: Optional[VLMCache] = None,
+    simulated_vlm_fallback: bool = True,
 ) -> EpisodeResult:
     policy.reset()
     detected = {}
@@ -56,7 +59,13 @@ def run_episode(
         for query in queries:
             signal = episode.signal(query.stream_id, t_s)
             active_events = episode.active_events(query.stream_id, t_s)
-            verifier_score = _vlm_verifier_score(signal.cheap_score, len(active_events))
+            cached = vlm_cache.get(episode.episode_id, query.stream_id, t_s) if vlm_cache else None
+            if cached is not None:
+                verifier_score = cached.score
+            elif simulated_vlm_fallback:
+                verifier_score = _vlm_verifier_score(signal.cheap_score, len(active_events))
+            else:
+                verifier_score = 0.0
             is_positive = verifier_score >= detection_threshold
             if active_events and is_positive:
                 for event in active_events:
@@ -109,6 +118,8 @@ def run_benchmark(
     budget: Budget,
     cost_model: CostModel,
     detection_threshold: float = 0.62,
+    vlm_cache: Optional[VLMCache] = None,
+    simulated_vlm_fallback: bool = True,
 ) -> List[EpisodeResult]:
     results = []
     for policy in policies:
@@ -120,6 +131,8 @@ def run_benchmark(
                     budget=budget,
                     cost_model=cost_model,
                     detection_threshold=detection_threshold,
+                    vlm_cache=vlm_cache,
+                    simulated_vlm_fallback=simulated_vlm_fallback,
                 )
             )
     return results

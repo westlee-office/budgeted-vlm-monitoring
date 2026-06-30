@@ -13,6 +13,7 @@ from bmvm.io import load_manifest, write_json
 from bmvm.metrics import summarize_policy_results
 from bmvm.policies import POLICY_REGISTRY
 from bmvm.types import Budget, CostModel
+from bmvm.vlm_cache import VLMCache
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,6 +26,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cheap-scan-gpu-s", type=float, default=0.0015)
     parser.add_argument("--vlm-gpu-s", type=float, default=0.65)
     parser.add_argument("--detection-threshold", type=float, default=0.62)
+    parser.add_argument("--vlm-cache", default=None, help="Optional JSONL cache with episode_id,stream_id,t_s,score records.")
+    parser.add_argument("--no-simulated-vlm-fallback", action="store_true")
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--output", required=True)
     return parser.parse_args()
@@ -33,6 +36,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     episodes = load_manifest(args.manifest)
+    vlm_cache = VLMCache.from_jsonl(args.vlm_cache) if args.vlm_cache else None
     policies = []
     for name in [p.strip() for p in args.policies.split(",") if p.strip()]:
         if name not in POLICY_REGISTRY:
@@ -52,6 +56,8 @@ def main() -> None:
             vlm_gpu_s_per_call=args.vlm_gpu_s,
         ),
         detection_threshold=args.detection_threshold,
+        vlm_cache=vlm_cache,
+        simulated_vlm_fallback=not args.no_simulated_vlm_fallback,
     )
     summary = summarize_policy_results(episodes, results)
     payload = {
@@ -62,6 +68,8 @@ def main() -> None:
             "vlm_gpu_s_per_call": args.vlm_gpu_s,
         },
         "summary": summary,
+        "vlm_cache": args.vlm_cache,
+        "simulated_vlm_fallback": not args.no_simulated_vlm_fallback,
         "episodes": [
             {
                 "episode_id": r.episode_id,

@@ -40,10 +40,13 @@ def main() -> None:
     args = parse_args()
     with Path(args.result_json).open("r", encoding="utf-8") as f:
         payload = json.load(f)
+    rows = payload.get("summary") or payload.get("runs")
+    if rows is None:
+        raise SystemExit("Result JSON must include either 'summary' or aggregate 'runs'.")
     if args.format == "json":
-        print(json.dumps(payload["summary"], indent=2, sort_keys=True))
+        print(json.dumps(rows, indent=2, sort_keys=True))
     else:
-        print(markdown_table(payload["summary"]))
+        print(markdown_table(rows))
 
 
 if __name__ == "__main__":

@@ -78,3 +78,13 @@ class AnomalyTopKPolicy(_TopKPolicy):
 class ClipTopKPolicy(_TopKPolicy):
     name = "clip_topk"
     signal_name = "clip"
+
+
+class DensePolicy(Policy):
+    name = "dense_vlm"
+
+    def select(self, context: StepContext) -> List[Query]:
+        return [
+            Query(stream_id=s.stream_id, reason="dense_vlm_reference", score=1.0)
+            for s in sorted(context.signals, key=lambda signal: signal.stream_id)
+        ]

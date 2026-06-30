@@ -2,6 +2,9 @@
   "datasets": ["ucf_crime_multistream", "xd_violence_multistream"],
   "stream_counts": [32, 64, 128, 256],
   "query_budgets_per_step": [1, 2, 4, 8],
+  "cheap_scan_gpu_s_per_stream": 0.0015,
+  "vlm_gpu_s_per_call": 0.65,
+  "detection_threshold": 0.62,
   "seeds": [7, 17, 29],
   "policies": [
     "random",

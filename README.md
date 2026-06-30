@@ -52,6 +52,40 @@ Run tests:
 python3 -m unittest discover -s tests
 ```
 
+Build a real multi-stream manifest from normalized dataset CSV files:
+
+```bash
+python3 scripts/multiplex_dataset.py \
+  --videos-csv data/manifests/ucf_videos.csv \
+  --events-csv data/manifests/ucf_events.csv \
+  --signals-csv data/features/ucf_signals.csv \
+  --output data/manifests/ucf_crime_multistream_128.json \
+  --episodes 64 \
+  --streams 128 \
+  --horizon-s 1800 \
+  --step-s 2
+```
+
+Run a grid over datasets, policies, budgets, and seeds:
+
+```bash
+python3 scripts/run_grid.py \
+  --config configs/experiments/core_grid.json \
+  --manifest-dir data/manifests \
+  --output-dir results/grid
+```
+
+Run with cached VLM verifier outputs:
+
+```bash
+python3 scripts/run_grid.py \
+  --config configs/experiments/core_grid.json \
+  --manifest-dir data/manifests \
+  --vlm-cache-dir data/vlm_cache \
+  --no-simulated-vlm-fallback \
+  --output-dir results/grid
+```
+
 Regenerate paper tables and figures:
 
 ```bash
@@ -67,6 +101,6 @@ tectonic main.tex
 
 ## Real Dataset Integration
 
-The runnable core expects a JSON manifest with episodes, streams, and event intervals. Dataset-specific converters should map UCF-Crime, XD-Violence, ShanghaiTech, Street Scene, and optional Ego4D/Video-MME style metadata into this manifest. The manifest contract is documented in `docs/EXPERIMENT_PLAN_KO.md`.
+The runnable core expects a JSON manifest with episodes, streams, and event intervals. Dataset-specific preprocessing should map UCF-Crime, XD-Violence, ShanghaiTech, Street Scene, and optional Ego4D/Video-MME style metadata into normalized CSV files, then `scripts/multiplex_dataset.py` converts them into BMVM manifests. The manifest contract is documented in `docs/EXPERIMENT_PLAN_KO.md`, the multiplexing path in `docs/MULTIPLEXING_KO.md`, and the cached VLM verifier interface in `docs/VLM_CACHE_KO.md`.
 
 Raw datasets and extracted features are intentionally ignored by git.

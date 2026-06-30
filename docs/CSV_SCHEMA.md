@@ -44,7 +44,7 @@ episode_id,stream_id,t_s,motion,anomaly,clip,event_ids
 ucf-mux-0001,s017,122.0,0.81,0.77,0.62,e0001
 ```
 
-Build a manifest:
+Build a manifest from already-multiplexed `events.csv` and `signals.csv`:
 
 ```bash
 python3 scripts/build_manifest_from_csv.py \
@@ -53,3 +53,5 @@ python3 scripts/build_manifest_from_csv.py \
   --output data/manifests/ucf_crime_multistream.json \
   --step-s 2.0
 ```
+
+For source datasets organized by original videos, prefer the multiplexing path in `docs/MULTIPLEXING_KO.md`.

@@ -13,8 +13,9 @@ dist/
 # Local datasets and generated artifacts
 data/raw/
 data/features/
-data/manifests/private/
-data/synthetic/*.json
+data/manifests/
+data/synthetic/
+data/vlm_cache/
 results/
 paper/iclr2027/main.pdf
 paper/iclr2027/main.aux
