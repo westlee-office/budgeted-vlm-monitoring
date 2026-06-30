@@ -2,8 +2,19 @@
 
 We evaluate whether selective perception improves event recall and latency under fixed budgets.
 
+\paragraph{Experimental setup.}
+Table~\ref{tab:experiment-setup} lists the main implementation choices. Cheap features are cached once per source video. VLM verifier outputs are also cached and exposed only when a policy spends a query. Unless otherwise noted, the main table reports the 128-stream setting at four VLM calls per timestep, averaged across three multiplexing seeds.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Core experimental setup. The exact VLM cache can be regenerated from the released query-pool schema.}
+\label{tab:experiment-setup}
+\input{tables/experiment_setup}
+\end{table}
+
 \paragraph{Baselines.}
-We compare against random scheduling, uniform round-robin scheduling, motion top-$k$, anomaly-score top-$k$, CLIP prompt top-$k$, and dense VLM inspection. Dense inspection is an upper-cost reference rather than a deployable baseline.
+We compare against random scheduling, uniform round-robin scheduling, motion top-$k$, anomaly-score top-$k$, CLIP prompt top-$k$, and dense VLM inspection. The single-signal baselines isolate whether one cheap cue is sufficient. Dense inspection runs the verifier on every stream-time pair and serves as an upper-cost reference rather than a deployable baseline.
 
 \paragraph{Main results.}
 Table~\ref{tab:main-results} reports results at a fixed per-timestep VLM-call budget. \method{} improves event recall by 10.8 percentage points over CLIP prompt top-$k$ and 15.0 points over anomaly top-$k$. It also reduces mean time-to-detect and false alarms. Dense VLM inspection has the highest recall, but costs 7420 GPU-seconds per hour, compared with 1088 for \method.
@@ -21,6 +32,16 @@ Table~\ref{tab:main-results} reports results at a fixed per-timestep VLM-call bu
 \caption{Cost-performance frontier. \method{} sits near dense VLM recall while operating close to the sparse scheduler compute regime.}
 \label{fig:frontier}
 \end{figure}
+
+\paragraph{Per-dataset breakdown.}
+Table~\ref{tab:by-dataset} shows that the improvement is not confined to a single source dataset. The largest gain appears on UCF-Crime-style surveillance episodes, where background distractors are common. The gain remains on XD-Violence-style semantic events, where prompt similarity is useful but not sufficient by itself.
+
+\begin{table}[t]
+\centering
+\caption{Per-dataset breakdown at the main budget. Recall values are percentages.}
+\label{tab:by-dataset}
+\input{tables/by_dataset}
+\end{table}
 
 \paragraph{Detection latency.}
 Figure~\ref{fig:ttd-cdf} shows time-to-detect distributions for detected events. \method{} shifts detections earlier, which is critical in monitoring even when final recall is similar.
@@ -61,3 +82,6 @@ Table~\ref{tab:ablation} shows that each component contributes. Removing event m
 \label{tab:ablation}
 \input{tables/ablation}
 \end{table}
+
+\paragraph{Budget interpretation.}
+The fixed call-budget setting is stricter than reporting accuracy at a fixed input length: every timestep forces the agent to decide which streams deserve semantic inspection. Under equal calls, all sparse policies spend the same number of VLM queries; improvements therefore come from allocation quality, not from using more expensive perception. Under equal GPU-seconds, dense inspection is penalized because its cost scales linearly with stream count.

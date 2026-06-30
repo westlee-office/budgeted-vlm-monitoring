@@ -3,10 +3,18 @@
 \benchmark{} converts existing event-centric video resources into online monitoring episodes. Each episode multiplexes many source videos into a synchronized stream set. Event intervals retain labels, severity, and natural-language descriptions. Non-event videos provide background streams and hard distractors.
 
 \paragraph{Episode construction.}
-Given a pool of annotated videos, we sample $N$ streams per episode, align them on a common clock, and place rare events at their original or resampled intervals. The agent observes only cheap per-stream features at every timestep. Expensive VLM outputs are hidden unless the policy spends a query. This creates an online decision problem rather than an offline video QA task.
+Given a pool of annotated videos, we sample $N$ streams per episode, align them on a common clock, and preserve video-level train/test splits so that the same source video cannot appear in both policy tuning and evaluation. Event videos provide positive intervals; normal videos and non-overlapping segments provide background streams. We sample hard distractors by ranking background clips with cheap activity scores and mixing them with random normal streams. The agent observes only cheap per-stream features at every timestep. Expensive VLM outputs are hidden unless the policy spends a query. This creates an online decision problem rather than an offline video QA task.
 
 \paragraph{Dataset tracks.}
-The primary surveillance track uses UCF-Crime-style untrimmed anomaly videos. The robustness track adds XD-Violence-style multimodal violence events and smaller scene-specific anomaly datasets. The semantic track attaches open-vocabulary incident prompts and summary targets to selected event intervals. Long-video QA datasets can be adapted as a diagnostic track, but they are not treated as substitutes for rare-event monitoring.
+The primary surveillance track uses UCF-Crime-style untrimmed anomaly videos. The robustness track adds XD-Violence-style multimodal violence events and smaller scene-specific anomaly datasets. The semantic track attaches open-vocabulary incident prompts and summary targets to selected event intervals. Long-video QA datasets can be adapted as a diagnostic track, but they are not treated as substitutes for rare-event monitoring. Table~\ref{tab:dataset-tracks} summarizes the intended benchmark tracks and their roles.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Dataset tracks used by \benchmark. The benchmark is defined at the episode level: each source video becomes one possible stream in a multi-stream online episode.}
+\label{tab:dataset-tracks}
+\input{tables/dataset_tracks}
+\end{table}
 
 \paragraph{Comparison to existing benchmarks.}
 Table~\ref{tab:benchmark-comparison} summarizes the gap. Existing VQA, long-video, anomaly, and streaming-video benchmarks each cover part of the problem, but they do not jointly require multi-stream online allocation under explicit VLM budgets.
@@ -20,3 +28,9 @@ Table~\ref{tab:benchmark-comparison} summarizes the gap. Existing VQA, long-vide
 
 \paragraph{Cost model.}
 Each timestep incurs cheap scan cost for lightweight features and query cost for VLM calls. The default benchmark fixes the number of VLM calls per timestep; secondary sweeps fix total GPU-seconds per hour. This separation lets the benchmark compare scheduling policy quality without conflating it with the raw speed of a particular VLM backend.
+
+\paragraph{Fairness and caching.}
+All policies are evaluated against the same manifest, cheap feature cache, VLM query pool, and verifier cache. Dense VLM inspection is treated as an upper-cost reference and not as a deployable baseline. To avoid giving any scheduler privileged information, VLM cache entries are only exposed when the policy selects the corresponding stream-time pair. This cache-based protocol makes expensive model evaluation reproducible while preserving the online decision structure.
+
+\paragraph{What the benchmark is not.}
+\benchmark{} is not a claim that multiplexed public datasets perfectly reproduce every camera deployment. Instead, it isolates a missing research variable: allocation of expensive visual perception under event uncertainty. The protocol is designed so that future work can swap in private deployment logs, robotics sensors, or multi-camera driving streams without changing the metric definitions.

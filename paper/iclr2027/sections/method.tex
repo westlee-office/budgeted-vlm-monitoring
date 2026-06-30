@@ -29,5 +29,24 @@ w_a a_{i,t} + w_m m_{i,t} + w_p p_{i,t}
 
 where $U_{i,t}$ is uncertainty around the decision boundary and $R_{i,t}$ is a cooldown penalty for repeated queries. The policy selects the top actions under the current call budget. If a VLM verifies an event, memory is strengthened; if the alert is false, that stream's short-term risk is suppressed.
 
+\paragraph{Online algorithm.}
+\method{} is deliberately simple enough to audit. At every timestep, it scans all streams cheaply, updates a per-stream memory state, scores the marginal value of querying each stream, selects the top-$B$ streams, and updates memory from the verifier output:
+
+\begin{quote}
+\small
+\textbf{Algorithm 1: \method{} at timestep $t$}\\
+1. Compute cheap signals $x_{i,t}=[m_{i,t},a_{i,t},p_{i,t}]$ for all streams.\\
+2. For each stream, retrieve memory $h_{i,t}$, last-query time, and false-positive history.\\
+3. Compute $V_{i,t}=w_a a_{i,t}+w_m m_{i,t}+w_p p_{i,t}+w_h h_{i,t}+w_u U_{i,t}-w_r R_{i,t}$.\\
+4. Query the VLM for the top-$B$ streams under the current budget.\\
+5. Emit alerts when verifier score exceeds threshold; update event memory and cooldown state.
+\end{quote}
+
+\paragraph{Why these terms?}
+The anomaly term prioritizes rare out-of-distribution evidence, the CLIP term provides open-vocabulary semantic routing, and the motion term handles events that are visually salient but semantically under-specified. Memory rewards temporal persistence and prevents one-frame evidence from disappearing too quickly. The uncertainty term encourages queries near the decision boundary, where an expensive VLM call is most likely to change the agent's belief. The cooldown penalty prevents repeated spending on the same stream unless new evidence accumulates.
+
+\paragraph{Fixed and learnable variants.}
+The default \method{} uses fixed normalized weights for transparency and strong reproducibility. The same scoring form can be learned from dense-oracle traces by treating VLM verification as the target marginal utility of a query. We use the fixed policy as the main answer-first system because it exposes the benchmark bottleneck without requiring private logs, and we include component ablations to test whether its terms matter.
+
 \paragraph{Incident report.}
 Selected stream segments are passed to the VLM with a structured prompt asking for event type, evidence, uncertainty, and whether operator escalation is justified. This makes the output useful for monitoring rather than only binary anomaly detection.

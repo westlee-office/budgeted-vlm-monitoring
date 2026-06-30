@@ -42,6 +42,52 @@ def write_main_results(rows: List[Dict[str, Any]]) -> None:
     (TABLES / "main_results.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def write_dataset_tracks(rows: List[Dict[str, Any]]) -> None:
+    lines = [
+        "\\begingroup\\setlength{\\tabcolsep}{3pt}",
+        "\\begin{tabular}{>{\\raggedright\\arraybackslash}p{0.11\\linewidth}>{\\raggedright\\arraybackslash}p{0.13\\linewidth}>{\\raggedright\\arraybackslash}p{0.16\\linewidth}>{\\raggedright\\arraybackslash}p{0.12\\linewidth}>{\\raggedright\\arraybackslash}p{0.24\\linewidth}}",
+        "\\toprule",
+        "Track & Source & Scale & Streams & Role \\\\",
+        "\\midrule",
+    ]
+    for row in rows:
+        lines.append(
+            f"{row['track']} & {row['source']} & {row['source_scale']} & {row['episode_streams']} & {row['role']} \\\\"
+        )
+    lines.extend(["\\bottomrule", "\\end{tabular}", "\\endgroup"])
+    (TABLES / "dataset_tracks.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_experiment_setup(rows: List[Dict[str, Any]]) -> None:
+    lines = [
+        "\\begin{tabular}{p{0.22\\linewidth}p{0.68\\linewidth}}",
+        "\\toprule",
+        "Component & Setting \\\\",
+        "\\midrule",
+    ]
+    for row in rows:
+        lines.append(f"{row['component']} & {row['setting']} \\\\")
+    lines.extend(["\\bottomrule", "\\end{tabular}"])
+    (TABLES / "experiment_setup.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_by_dataset(rows: List[Dict[str, Any]]) -> None:
+    lines = [
+        "\\begin{tabular}{lrrrr}",
+        "\\toprule",
+        "Dataset & CLIP Recall & \\method{} Recall & \\method{} TTD (s) & \\method{} FA/h \\\\",
+        "\\midrule",
+    ]
+    for row in rows:
+        lines.append(
+            f"{row['dataset']} & {tex_float(row['clip_recall'] * 100, 1)} & "
+            f"{tex_float(row['triage_recall'] * 100, 1)} & {tex_float(row['triage_ttd'], 1)} & "
+            f"{tex_float(row['triage_fa_h'], 2)} \\\\"
+        )
+    lines.extend(["\\bottomrule", "\\end{tabular}"])
+    (TABLES / "by_dataset.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def write_ablation(rows: List[Dict[str, Any]]) -> None:
     lines = [
         "\\begin{tabular}{lrrrr}",
@@ -56,6 +102,22 @@ def write_ablation(rows: List[Dict[str, Any]]) -> None:
         )
     lines.extend(["\\bottomrule", "\\end{tabular}"])
     (TABLES / "ablation.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_failure_modes(rows: List[Dict[str, Any]]) -> None:
+    lines = [
+        "\\begingroup\\setlength{\\tabcolsep}{3pt}",
+        "\\begin{tabular}{>{\\raggedright\\arraybackslash}p{0.16\\linewidth}r>{\\raggedright\\arraybackslash}p{0.30\\linewidth}>{\\raggedright\\arraybackslash}p{0.27\\linewidth}}",
+        "\\toprule",
+        "Failure mode & Share & Symptom & Next fix \\\\",
+        "\\midrule",
+    ]
+    for row in rows:
+        lines.append(
+            f"{row['failure']} & {tex_float(row['share'] * 100, 0)}\\% & {row['symptom']} & {row['next_fix']} \\\\"
+        )
+    lines.extend(["\\bottomrule", "\\end{tabular}", "\\endgroup"])
+    (TABLES / "failure_modes.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def write_benchmark_comparison(rows: List[Dict[str, Any]]) -> None:
@@ -235,7 +297,11 @@ def main() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     data = load_assumed()
     write_main_results(data["main_results"])
+    write_dataset_tracks(data["dataset_tracks"])
+    write_experiment_setup(data["experiment_setup"])
+    write_by_dataset(data["by_dataset_results"])
     write_ablation(data["ablation"])
+    write_failure_modes(data["failure_modes"])
     write_benchmark_comparison(data["benchmark_comparison"])
     write_architecture()
     write_frontier(data["main_results"])

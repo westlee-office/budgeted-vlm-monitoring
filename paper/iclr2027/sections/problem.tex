@@ -8,6 +8,8 @@ a_{i,t} = \texttt{look}(s_i, t, \Delta, r, q),
 
 where $\Delta$ is temporal extent, $r$ is resolution or region, and $q$ is an optional natural-language incident query. Each action has cost $c(a_{i,t})$ in GPU-seconds and VLM calls.
 
+The action space is intentionally hierarchical. A system may first spend a cheap scan on every stream, then choose a small set of streams for medium-cost feature extraction, and finally call a VLM on a selected clip or crop. In this paper we evaluate the hardest bottleneck explicitly: the number of expensive VLM calls available at each timestep. The same protocol can also enforce a global episode-level GPU budget or memory budget.
+
 The episode contains latent event intervals $\mathcal{E}=\{e_j\}$, where each event has a stream, start time, end time, label, severity, and language description. A successful monitoring agent must detect events quickly while controlling operational cost:
 
 \[
@@ -15,6 +17,8 @@ The episode contains latent event intervals $\mathcal{E}=\{e_j\}$, where each ev
 \]
 
 where $\tau_j$ is detection delay, $\hat{d}_j$ is the generated incident description, and $F$ is the number of false alarms.
+
+For evaluation, an event is counted as detected if the agent raises a positive alert during the event interval or within a fixed grace window after event onset. Duplicate alerts for the same event do not improve recall but do increase operational cost. A false alarm is any positive alert on a stream-time pair that does not overlap a ground-truth event. This event-centric accounting prevents a policy from scoring well by repeatedly inspecting the same easy event or by flooding the operator with alerts.
 
 We report the following metrics:
 

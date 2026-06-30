@@ -26,6 +26,10 @@ ICLR primary, CVPR strong secondary 전략으로 paper를 준비한다.
   - `paper/iclr2027/tables/main_results.tex`
   - `paper/iclr2027/tables/ablation.tex`
   - `paper/iclr2027/tables/benchmark_comparison.tex`
+  - `paper/iclr2027/tables/dataset_tracks.tex`
+  - `paper/iclr2027/tables/experiment_setup.tex`
+  - `paper/iclr2027/tables/by_dataset.tex`
+  - `paper/iclr2027/tables/failure_modes.tex`
 - generated figures:
   - `paper/iclr2027/figures/architecture_tikz.tex`
   - `paper/iclr2027/figures/frontier_tikz.tex`
@@ -109,7 +113,7 @@ cd paper/iclr2027 && tectonic main.tex
 
 ### 4. Git/GitHub Management
 
-상태: 부분 완료
+상태: 완료
 
 완료:
 
@@ -117,6 +121,10 @@ cd paper/iclr2027 && tectonic main.tex
 - source/docs/tests/paper source committed.
 - generated/raw artifacts ignored.
 - current branch: `main`.
+- remote repo created: `https://github.com/westlee-office/budgeted-vlm-monitoring`
+- remote visibility: `PRIVATE`.
+- local `main` tracks `origin/main`.
+- latest source pushed to GitHub.
 
 Commits:
 
@@ -125,30 +133,14 @@ Commits:
 - `0fea30e Add real-data grid execution and VLM cache pipeline`
 - `08aef7f Add paper scaling figures and feature extraction tools`
 - `ada2bb3 Add result-to-paper and verifier cache adapters`
-
-미완료:
-
-- GitHub remote creation and push.
-
-Reason:
-
-- GitHub remote creation/push is an external upload. It requires explicit user approval.
-
-Ready command after approval:
-
-```bash
-gh repo create budgeted-vlm-monitoring \
-  --private \
-  --source=. \
-  --remote=origin \
-  --push
-```
+- `857ac6c Add GitHub repository setup note`
+- `a649563 Add artifact status review`
 
 ## Current Verification Summary
 
 상태:
 
 - Tests: 12 passed.
-- PDF: built successfully.
-- Git worktree: clean except ignored generated artifacts.
-- Remaining blocker: explicit approval for GitHub remote creation/push.
+- PDF: built successfully; current answer-first draft is 11 pages and about 4,682 extracted words.
+- Git/GitHub: private remote exists and `main` has been pushed.
+- Remaining blocker: none for repository setup. The research blocker is replacing assumed answer-first numbers with real UCF/XD/stress-track experiment results.

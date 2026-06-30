@@ -1,0 +1,13 @@
+\begingroup\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.16\linewidth}r>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}}
+\toprule
+Failure mode & Share & Symptom & Next fix \\
+\midrule
+Semantic ambiguity & 31\% & cheap CLIP/anomaly cues rank a visually similar but harmless stream above the true event & query-conditioned verifier prompts and class-specific calibration \\
+Short event missed between timesteps & 24\% & event duration is shorter than the cheap scan interval or appears between sampled frames & adaptive local frame-rate increase after weak evidence \\
+Persistent distractor & 19\% & repeated benign motion keeps one stream near the top of the queue & stronger negative memory and scene-specific background models \\
+Weak visual evidence & 16\% & event is visible only through small objects, occlusion, or low-resolution regions & region proposal and crop-level look actions \\
+VLM verifier uncertainty & 10\% & selected segment is correct but verifier score is under the alert threshold & calibrated thresholding and multi-query verification \\
+\bottomrule
+\end{tabular}
+\endgroup

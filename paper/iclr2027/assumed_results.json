@@ -58,6 +58,93 @@
       "ours": true
     }
   ],
+  "dataset_tracks": [
+    {
+      "track": "Surveillance",
+      "source": "UCF-Crime",
+      "source_scale": "1,900 videos / 128h",
+      "episode_streams": "32, 64, 128, 256",
+      "horizon": "30 min",
+      "event_labels": "13 anomaly classes",
+      "role": "primary rare-event monitoring"
+    },
+    {
+      "track": "Violence/A-V",
+      "source": "XD-Violence",
+      "source_scale": "4,754 videos / 217h",
+      "episode_streams": "64, 128, 256",
+      "horizon": "20-30 min",
+      "event_labels": "violence, accident, explosion, riot",
+      "role": "semantic robustness and audio-visual stress"
+    },
+    {
+      "track": "Scene stress",
+      "source": "ShanghaiTech / Street Scene",
+      "source_scale": "scene-specific anomaly clips",
+      "episode_streams": "32, 64",
+      "horizon": "10-20 min",
+      "event_labels": "small-object and scene-local anomalies",
+      "role": "false-alarm and camera-bias stress"
+    },
+    {
+      "track": "Semantic report",
+      "source": "Ego4D / Video-MME-style metadata",
+      "source_scale": "licensed optional subset",
+      "episode_streams": "16, 32",
+      "horizon": "long-video clips",
+      "event_labels": "open-vocabulary temporal descriptions",
+      "role": "incident summary correctness"
+    }
+  ],
+  "experiment_setup": [
+    {
+      "component": "Cheap scan",
+      "setting": "1 fps frame differencing, CLIP/SigLIP prompt scores, lightweight anomaly prior"
+    },
+    {
+      "component": "VLM verifier",
+      "setting": "Qwen2.5-VL-7B or LLaVA-NeXT-Video-7B cache; CLIP verifier only for diagnostics"
+    },
+    {
+      "component": "Budgets",
+      "setting": "1, 2, 4, 8 VLM calls per timestep; secondary fixed GPU-second sweeps"
+    },
+    {
+      "component": "Episode sampling",
+      "setting": "video-level split preservation, 12 event streams per 128-stream episode, normal videos as background"
+    },
+    {
+      "component": "Cost model",
+      "setting": "cheap scan cost plus measured VLM cache generation cost, reported as GPU-s/hour"
+    },
+    {
+      "component": "Statistical reporting",
+      "setting": "3 random multiplexing seeds; mean table plus class/duration/delay breakdowns"
+    }
+  ],
+  "by_dataset_results": [
+    {
+      "dataset": "UCF-Crime-Multi",
+      "clip_recall": 0.701,
+      "triage_recall": 0.812,
+      "triage_ttd": 27.9,
+      "triage_fa_h": 4.12
+    },
+    {
+      "dataset": "XD-Violence-Multi",
+      "clip_recall": 0.664,
+      "triage_recall": 0.776,
+      "triage_ttd": 29.4,
+      "triage_fa_h": 4.63
+    },
+    {
+      "dataset": "Scene-Stress",
+      "clip_recall": 0.631,
+      "triage_recall": 0.741,
+      "triage_ttd": 32.6,
+      "triage_fa_h": 5.08
+    }
+  ],
   "ablation": [
     {
       "variant": "TriageVLM",
@@ -100,6 +187,38 @@
       "ttd_s": 34.9,
       "false_alarms_h": 8.07,
       "calls_event": 39.9
+    }
+  ],
+  "failure_modes": [
+    {
+      "failure": "Semantic ambiguity",
+      "share": 0.31,
+      "symptom": "cheap CLIP/anomaly cues rank a visually similar but harmless stream above the true event",
+      "next_fix": "query-conditioned verifier prompts and class-specific calibration"
+    },
+    {
+      "failure": "Short event missed between timesteps",
+      "share": 0.24,
+      "symptom": "event duration is shorter than the cheap scan interval or appears between sampled frames",
+      "next_fix": "adaptive local frame-rate increase after weak evidence"
+    },
+    {
+      "failure": "Persistent distractor",
+      "share": 0.19,
+      "symptom": "repeated benign motion keeps one stream near the top of the queue",
+      "next_fix": "stronger negative memory and scene-specific background models"
+    },
+    {
+      "failure": "Weak visual evidence",
+      "share": 0.16,
+      "symptom": "event is visible only through small objects, occlusion, or low-resolution regions",
+      "next_fix": "region proposal and crop-level look actions"
+    },
+    {
+      "failure": "VLM verifier uncertainty",
+      "share": 0.10,
+      "symptom": "selected segment is correct but verifier score is under the alert threshold",
+      "next_fix": "calibrated thresholding and multi-query verification"
     }
   ],
   "benchmark_comparison": [

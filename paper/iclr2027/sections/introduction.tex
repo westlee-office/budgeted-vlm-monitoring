@@ -12,13 +12,15 @@ This question differs from efficient inference. Token pruning, frame selection, 
 
 We formalize this setting as \emph{budgeted multi-stream VLM monitoring}. At each timestep, an agent receives cheap signals from many streams and selects a limited number of visual observation actions. Each action may query an expensive VLM, update memory, or escalate an incident. The goal is to maximize event utility subject to compute and latency constraints.
 
+The difficulty is not simply that the stream count is large. The correct observation can be valuable for different reasons at different times: a high-motion stream may be a real incident, a static stream may contain an abandoned object, and a previously queried stream may deserve reinspection only if new evidence appears. A useful benchmark must therefore expose the full allocation problem: sparse event intervals, hard background distractors, asynchronous stream histories, explicit VLM-call limits, and metrics that penalize late or noisy alerts. A useful method must likewise decide when cheap evidence is enough, when uncertainty itself is valuable, and when a stream has already consumed enough attention.
+
 Our contributions are:
 
 \begin{enumerate}
     \item We introduce \benchmark, a benchmark protocol for online multi-stream VLM monitoring with explicit budgets, event-level metrics, and semantic incident summaries.
     \item We propose \method, a value-of-information scheduler that allocates expensive VLM calls using cheap perception, event memory, uncertainty, and cooldown-aware stream selection.
+    \item We report a complete evaluation protocol: dataset tracks, budget sweeps, stream-count scaling, latency CDFs, false-alarm accounting, per-dataset breakdowns, ablations, and failure modes.
     \item We show that compute-aware perception allocation substantially improves the cost-performance frontier: \method{} recovers 79.1\% of events at a fixed budget, compared with 68.3\% for the best single-signal baseline, while using 6.8$\times$ fewer GPU-seconds per hour than dense VLM inspection.
-    \item We provide analysis showing that memory and semantic uncertainty are not cosmetic additions: removing either degrades recall, latency, or false-alarm control under the same call budget.
 \end{enumerate}
 
 The broader claim is that multimodal agents need policies for perception, not only better perceptual backbones. In monitoring, robotics, autonomous driving, and scientific observation, seeing less can be the condition for monitoring more.

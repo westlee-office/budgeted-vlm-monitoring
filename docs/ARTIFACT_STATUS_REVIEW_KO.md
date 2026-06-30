@@ -65,8 +65,8 @@ cd paper/iclr2027 && tectonic main.tex
 상태: 초안으로는 양호, 제출용으로는 미완
 
 - PDF: `paper/iclr2027/main.pdf`
-- page count: 9
-- extracted word count: 약 3,318 words
+- page count: 11
+- extracted word count: 약 4,682 words
 - 구성:
   - abstract
   - introduction
@@ -86,12 +86,16 @@ cd paper/iclr2027 && tectonic main.tex
   - stream-count scaling
   - qualitative timeline
   - ablation table
+  - dataset-track protocol table
+  - experimental setup table
+  - per-dataset result breakdown table
+  - failure taxonomy table
 
 주의:
 
 - 본문은 assumed result를 실제 결과처럼 서술한다. answer-first draft 목적에는 맞지만, 실제 제출 전에는 반드시 숫자와 표현을 실험 결과로 교체해야 한다.
 - ICLR/CVPR 공식 style file이 아직 적용되지 않았다.
-- 논문은 아직 짧다. top-tier 제출용으로는 benchmark construction, data protocol, method derivation, experimental setup, failure cases, appendix가 부족하다.
+- answer-first depth는 이전 9-page draft 대비 강화되었지만, top-tier 제출용으로는 실제 결과 provenance, appendix, official style, learned-policy evidence가 아직 부족하다.
 
 ### Experiment Plan
 
@@ -304,7 +308,7 @@ python3 scripts/make_paper_assets.py
 
 위험:
 
-- 현재는 article class 기반 9-page draft다.
+- 현재는 article class 기반 11-page working draft다.
 - ICLR style, anonymity checklist, ethics/reproducibility formatting, appendix structure가 없다.
 
 개선:
@@ -340,20 +344,24 @@ python3 scripts/make_paper_assets.py
   - `python3 scripts/make_paper_assets.py`
 - `tectonic` CI build는 optional 또는 scheduled job으로 추가.
 
-### P1. Completion audit 문서가 stale
+### P1. Result provenance와 reproducibility lock 부족
 
 위험:
 
-- `docs/COMPLETION_AUDIT_KO.md`는 GitHub push 전 상태를 기록하고 있어 “GitHub remote 미완료”라고 되어 있다.
-- 현재 사실과 다르다.
+- answer-first 수치는 아직 assumed JSON에서 생성된다.
+- 실제 제출 시점에는 각 숫자가 어떤 grid run, commit, model checkpoint, prompt hash, dataset split에서 왔는지 추적 가능해야 한다.
+- 지금 구조는 result-to-paper path는 있으나, paper table에 provenance footnote나 machine-readable run index가 붙어 있지 않다.
 
 개선:
 
-- audit 문서 업데이트:
-  - GitHub remote 생성 완료
-  - repo URL 추가
-  - 최신 commit list 반영
-  - remaining blocker 제거
+- aggregate result에 run metadata 필수화:
+  - git commit
+  - dataset config hash
+  - policy config hash
+  - VLM checkpoint and prompt hash
+  - cache generation timestamp
+- `scripts/update_paper_results_from_grid.py`가 provenance JSON과 LaTeX footnote를 같이 생성하도록 개선.
+- paper appendix에 exact run table을 추가.
 
 ### P2. Repo hygiene
 
