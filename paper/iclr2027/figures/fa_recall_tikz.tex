@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth,
+  height=0.66\linewidth,
+  xlabel={False alarms per hour},
+  ylabel={Event Recall@B (\%)},
+  xmin=3.8,
+  xmax=10.0,
+  ymin=35,
+  ymax=90,
+  grid=both,
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+]
+\addplot+[only marks, mark=*, mark size=1.8pt, blue!65!black] coordinates {(7.84,41.199999999999996) (6.97,46.800000000000004) (9.36,57.4) (8.12,64.1) (6.44,68.30000000000001)};
+\addplot+[only marks, mark=star, mark size=4pt, red!70!black, thick] coordinates {(4.38,79.1)};
+\addplot+[only marks, mark=diamond*, mark size=2.4pt, black!65] coordinates {(4.91,86.1)};
+\node[anchor=east, font=\scriptsize, blue!65!black] at (axis cs:9.65,68) {sparse baselines};
+\node[anchor=west, font=\scriptsize, red!70!black] at (axis cs:4.53,79.1) {\method};
+\node[anchor=south west, font=\scriptsize, black!65] at (axis cs:5.03,86.1) {dense};
+\end{axis}
+\end{tikzpicture}

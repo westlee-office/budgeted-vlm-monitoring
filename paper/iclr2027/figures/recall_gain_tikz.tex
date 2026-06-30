@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth,
+  height=0.66\linewidth,
+  xbar,
+  xmin=0,
+  xmax=46,
+  xlabel={Recall gain over baseline (points)},
+  symbolic y coords={CLIP,Anomaly,Motion,Uniform,Random},
+  ytick=data,
+  y dir=reverse,
+  nodes near coords,
+  nodes near coords style={font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  grid=major,
+]
+\addplot+[fill=red!55, draw=red!70!black] coordinates {(10.8,CLIP) (15.0,Anomaly) (21.7,Motion) (32.3,Uniform) (37.9,Random)};
+\end{axis}
+\end{tikzpicture}

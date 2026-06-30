@@ -3,10 +3,11 @@
   width=\linewidth,
   height=0.66\linewidth,
   xlabel={Number of streams},
-  ylabel={Dense GPU-s/h (k)},
+  ylabel={Recall margin over CLIP (points)},
   xtick={32,64,128,256},
   ybar,
   ymin=0,
+  ymax=16,
   bar width=10pt,
   nodes near coords,
   nodes near coords style={font=\scriptsize},
@@ -14,6 +15,6 @@
   label style={font=\scriptsize},
   grid=major,
 ]
-\addplot+[fill=gray!25] coordinates {(32,1.9) (64,3.7) (128,7.4) (256,14.8)};
+\addplot+[fill=red!55, draw=red!70!black] coordinates {(32,9.999999999999998) (64,10.599999999999998) (128,10.799999999999999) (256,13.600000000000001)};
 \end{axis}
 \end{tikzpicture}

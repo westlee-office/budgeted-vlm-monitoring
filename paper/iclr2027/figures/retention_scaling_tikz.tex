@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth,
+  height=0.66\linewidth,
+  xlabel={Number of streams},
+  ylabel={Recall retained vs 32 streams (\%)},
+  xmin=24, xmax=272,
+  ymin=50, ymax=105,
+  xtick={32,64,128,256},
+  grid=both,
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={at={(0.03,0.03)},anchor=south west,font=\scriptsize,draw=none,fill=white},
+]
+\addplot+[mark=square*, thick] coordinates {(32,100.0) (64,86.83788121990371) (128,75.1203852327448) (256,57.30337078651685)};
+\addlegendentry{Uniform}
+\addplot+[mark=triangle*, thick] coordinates {(32,100.0) (64,96.09164420485175) (128,92.04851752021564) (256,82.47978436657681)};
+\addlegendentry{CLIP top-k}
+\addplot+[mark=star, mark size=3pt, very thick] coordinates {(32,100.0) (64,97.26840855106889) (128,93.94299287410928) (256,88.83610451306414)};
+\addlegendentry{\method}
+\end{axis}
+\end{tikzpicture}

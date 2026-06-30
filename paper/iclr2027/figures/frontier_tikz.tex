@@ -1,18 +1,29 @@
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.72\linewidth,
-  height=0.42\linewidth,
+  width=\linewidth,
+  height=0.66\linewidth,
   xlabel={GPU-seconds per hour},
   ylabel={Event Recall@B (\%)},
-  xmin=0,
-  xmax=7600,
+  xmode=log,
+  xmin=800,
+  xmax=9000,
   ymin=35,
   ymax=90,
+  xtick={1000,2000,4000,8000},
+  xticklabels={1k,2k,4k,8k},
   grid=both,
-  legend style={at={(0.03,0.97)},anchor=north west,font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={at={(0.97,0.03)},anchor=south east,font=\scriptsize,draw=none,fill=white},
 ]
-\addplot+[mark=*, thick] coordinates {(1050,41.199999999999996) (1050,46.800000000000004) (1050,57.4) (1050,64.1) (1050,68.30000000000001) (7420,86.1) (1088,79.10000000000001)};
-\addlegendentry{Baselines and ours}
-\addplot+[only marks, mark=star, mark size=3.2pt, thick] coordinates {(1088,79.10000000000001)};
+\addplot+[only marks, mark=*, mark size=1.8pt, blue!65!black] coordinates {(1050,41.199999999999996) (1050,46.800000000000004) (1050,57.4) (1050,64.1) (1050,68.30000000000001)};
+\addlegendentry{sparse baselines}
+\addplot+[only marks, mark=star, mark size=4pt, red!70!black, thick] coordinates {(1088,79.10000000000001)};
+\addlegendentry{\method}
+\addplot+[only marks, mark=diamond*, mark size=2.4pt, black!65] coordinates {(7420,86.1)};
+\addlegendentry{dense VLM}
+\node[anchor=west, font=\scriptsize, red!70!black] at (axis cs:1210,79.1) {\method};
+\node[anchor=west, font=\scriptsize, black!65] at (axis cs:5050,86.1) {dense};
+\node[anchor=south west, font=\scriptsize, blue!65!black, align=left] at (axis cs:1120,54) {equal-call\\baselines};
 \end{axis}
 \end{tikzpicture}

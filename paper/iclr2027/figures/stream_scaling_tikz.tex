@@ -1,14 +1,16 @@
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.72\linewidth,
-  height=0.43\linewidth,
+  width=\linewidth,
+  height=0.66\linewidth,
   xlabel={Number of streams},
   ylabel={Event Recall@B (\%)},
   xmin=24, xmax=272,
   ymin=30, ymax=90,
   xtick={32,64,128,256},
   grid=both,
-  legend style={at={(0.03,0.03)},anchor=south west,font=\scriptsize},
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={at={(0.03,0.03)},anchor=south west,font=\scriptsize,draw=none,fill=white},
 ]
 \addplot+[mark=square*, thick] coordinates {(32,62.3) (64,54.1) (128,46.800000000000004) (256,35.699999999999996)};
 \addlegendentry{Uniform}

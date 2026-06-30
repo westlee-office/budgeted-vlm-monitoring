@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth,
+  height=0.62\linewidth,
+  ybar,
+  bar width=5pt,
+  ymin=0,
+  ymax=6,
+  ylabel={VLM queries},
+  symbolic x coords={s017,s044,s091},
+  xtick=data,
+  xticklabels={s017 robbery,s044 fall,s091 distractor},
+  x tick label style={font=\scriptsize, rotate=25, anchor=east},
+  y tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={at={(0.03,0.97)},anchor=north west,font=\scriptsize,draw=none,fill=white},
+  grid=major,
+]
+\addplot+[fill=blue!45, draw=blue!70!black] coordinates {(s017,4) (s044,2) (s091,5)};
+\addlegendentry{Anomaly top-k}
+\addplot+[fill=green!45, draw=green!45!black] coordinates {(s017,4) (s044,3) (s091,1)};
+\addlegendentry{\method}
+\end{axis}
+\end{tikzpicture}

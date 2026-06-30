@@ -66,7 +66,7 @@ cd paper/iclr2027 && tectonic main.tex
 
 - PDF: `paper/iclr2027/main.pdf`
 - page count: 14
-- extracted word count: 약 5,828 words
+- extracted word count: 약 6,034 words
 - cited references: 64
 - 구성:
   - abstract
@@ -83,9 +83,15 @@ cd paper/iclr2027 && tectonic main.tex
   - benchmark comparison
   - main results
   - cost-performance frontier
+  - recall-gain subfigure
   - time-to-detect CDF
+  - false-alarm/recall subfigure
   - stream-count scaling
+  - dense-cost scaling
+  - recall-retention scaling
+  - CLIP-margin scaling
   - qualitative timeline
+  - timeline query-count subfigure
   - ablation table
   - dataset-track protocol table
   - experimental setup table

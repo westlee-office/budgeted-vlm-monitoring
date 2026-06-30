@@ -17,7 +17,7 @@ Table~\ref{tab:experiment-setup} lists the main implementation choices. Cheap fe
 We compare against random scheduling, uniform round-robin scheduling, motion top-$k$, anomaly-score top-$k$, CLIP prompt top-$k$, and dense VLM inspection. The single-signal baselines isolate whether one cheap cue is sufficient. Dense inspection runs the verifier on every stream-time pair and serves as an upper-cost reference rather than a deployable baseline.
 
 \paragraph{Main results.}
-Table~\ref{tab:main-results} reports results at a fixed per-timestep VLM-call budget. \method{} improves event recall by 10.8 percentage points over CLIP prompt top-$k$ and 15.0 points over anomaly top-$k$. It also reduces mean time-to-detect and false alarms. Dense VLM inspection has the highest recall, but costs 7420 GPU-seconds per hour, compared with 1088 for \method.
+Table~\ref{tab:main-results} and Figure~\ref{fig:main-diagnostics} report results at a fixed per-timestep VLM-call budget. \method{} improves event recall by 10.8 percentage points over CLIP prompt top-$k$ and 15.0 points over anomaly top-$k$. It also reduces mean time-to-detect and false alarms. Dense VLM inspection has the highest recall, but costs 7420 GPU-seconds per hour, compared with 1088 for \method.
 
 \begin{table}[t]
 \centering
@@ -28,9 +28,30 @@ Table~\ref{tab:main-results} reports results at a fixed per-timestep VLM-call bu
 
 \begin{figure}[t]
 \centering
-\resizebox{0.92\linewidth}{!}{\input{figures/frontier_tikz}}
-\caption{Cost-performance frontier. \method{} sits near dense VLM recall while operating close to the sparse scheduler compute regime.}
-\label{fig:frontier}
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(a) Cost--recall frontier}}\\[-0.3em]
+\input{figures/frontier_tikz}
+\end{minipage}\hfill
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(b) Recall gain at equal calls}}\\[-0.3em]
+\input{figures/recall_gain_tikz}
+\end{minipage}
+
+\vspace{0.35em}
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(c) Detection delay CDF}}\\[-0.3em]
+\input{figures/ttd_cdf_tikz}
+\end{minipage}\hfill
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(d) False alarms vs recall}}\\[-0.3em]
+\input{figures/fa_recall_tikz}
+\end{minipage}
+\caption{Main diagnostic panels. \method{} improves recall at the sparse compute scale, detects more events early, and occupies a better false-alarm/recall region than single-signal schedulers. Dense VLM is shown as an upper-cost reference rather than a deployable baseline.}
+\label{fig:main-diagnostics}
 \end{figure}
 
 \paragraph{Per-dataset breakdown.}
@@ -44,22 +65,36 @@ Table~\ref{tab:by-dataset} shows that the improvement is not confined to a singl
 \end{table}
 
 \paragraph{Detection latency.}
-Figure~\ref{fig:ttd-cdf} shows time-to-detect distributions for detected events. \method{} shifts detections earlier, which is critical in monitoring even when final recall is similar.
-
-\begin{figure}[t]
-\centering
-\resizebox{0.92\linewidth}{!}{\input{figures/ttd_cdf_tikz}}
-\caption{Cumulative distribution of detection delays. A larger fraction of \method{} detections occur within the first 30 seconds after event onset.}
-\label{fig:ttd-cdf}
-\end{figure}
+Figure~\ref{fig:main-diagnostics}(c) shows time-to-detect distributions for detected events. A larger fraction of \method{} detections occur within the first 30 seconds after event onset, which is critical in monitoring even when final recall is similar.
 
 \paragraph{Scaling with stream count.}
 Figure~\ref{fig:stream-scaling} evaluates the same policy family as the number of simultaneous streams grows. Uniform scheduling degrades rapidly because each stream is revisited less often. CLIP prompt routing is more robust but still misses visually ambiguous events. \method{} preserves a larger fraction of event recall because memory and uncertainty keep borderline streams in the candidate set without repeatedly spending calls on distractors.
 
 \begin{figure}[t]
 \centering
-\resizebox{0.92\linewidth}{!}{\input{figures/stream_scaling_tikz}}
-\caption{Recall under a fixed per-timestep VLM-call budget as the number of monitored streams increases.}
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(a) Recall vs stream count}}\\[-0.3em]
+\input{figures/stream_scaling_tikz}
+\end{minipage}\hfill
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(b) Dense cost growth}}\\[-0.3em]
+\input{figures/dense_cost_scaling_tikz}
+\end{minipage}
+
+\vspace{0.35em}
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(c) Recall retained}}\\[-0.3em]
+\input{figures/retention_scaling_tikz}
+\end{minipage}\hfill
+\begin{minipage}{0.47\linewidth}
+\centering
+{\scriptsize\textbf{(d) Margin over CLIP}}\\[-0.3em]
+\input{figures/margin_scaling_tikz}
+\end{minipage}
+\caption{Stream-count scaling under a fixed per-timestep VLM-call budget. The panels separate accuracy degradation, dense inspection cost growth, retention relative to the 32-stream case, and \method{}'s margin over the strongest cheap semantic scheduler.}
 \label{fig:stream-scaling}
 \end{figure}
 
@@ -68,8 +103,17 @@ Figure~\ref{fig:timeline} visualizes one multi-stream episode. A single-signal a
 
 \begin{figure}[t]
 \centering
-\resizebox{0.98\linewidth}{!}{\input{figures/timeline_tikz}}
-\caption{Example query timeline. Red bands denote event intervals, ticks denote VLM queries, and the star marks the first \method{} detection.}
+\begin{minipage}{0.66\linewidth}
+\centering
+{\scriptsize\textbf{(a) Query timeline}}\\[-0.3em]
+\resizebox{\linewidth}{!}{\input{figures/timeline_tikz}}
+\end{minipage}\hfill
+\begin{minipage}{0.30\linewidth}
+\centering
+{\scriptsize\textbf{(b) Queries by stream}}\\[-0.3em]
+\input{figures/timeline_counts_tikz}
+\end{minipage}
+\caption{Example query allocation. Red bands denote event intervals, ticks denote VLM queries, and stars mark first \method{} detections. The count panel shows how cooldown suppresses repeated spending on the distractor stream while preserving event-stream coverage.}
 \label{fig:timeline}
 \end{figure}
 

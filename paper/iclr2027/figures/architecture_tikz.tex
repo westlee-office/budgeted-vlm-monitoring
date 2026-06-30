@@ -1,24 +1,24 @@
 \begin{tikzpicture}[
-  node distance=0.65cm,
-  box/.style={draw, rounded corners=2pt, align=center, inner sep=5pt, minimum height=0.78cm, font=\small},
-  stream/.style={box, fill=gray!10, minimum width=2.1cm},
-  module/.style={box, fill=blue!7, minimum width=2.5cm},
-  decision/.style={box, fill=orange!12, minimum width=2.8cm},
-  output/.style={box, fill=green!9, minimum width=2.4cm},
+  node distance=0.72cm and 0.64cm,
+  box/.style={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=0.68cm, font=\scriptsize},
+  stream/.style={box, fill=gray!10, minimum width=1.75cm},
+  module/.style={box, fill=blue!7, minimum width=2.05cm},
+  decision/.style={box, fill=orange!12, minimum width=2.05cm},
+  output/.style={box, fill=green!9, minimum width=1.85cm},
   arrow/.style={-Latex, thick}
 ]
-\node[stream] (streams) {Hundreds of\\video streams};
-\node[module, right=of streams] (cheap) {Cheap perception\\motion / CLIP / anomaly};
-\node[decision, right=of cheap] (policy) {Value-of-information\\scheduler};
-\node[module, right=of policy] (vlm) {Selective\\VLM calls};
-\node[module, below=of policy] (memory) {Event memory\\and uncertainty};
-\node[output, right=of vlm] (report) {Incident alert\\and summary};
+\node[stream] (streams) {Stream bank\\$N$ cameras};
+\node[module, right=of streams] (cheap) {Cheap scan\\motion, CLIP, anomaly};
+\node[decision, right=of cheap] (policy) {VOI scorer\\rank streams};
+\node[module, right=of policy] (vlm) {VLM verifier\\selected clips};
+\node[output, right=of vlm] (report) {Alert +\\summary};
+\node[module, below=0.62cm of policy] (memory) {Memory state\\uncertainty, cooldown};
 
 \draw[arrow] (streams) -- (cheap);
-\draw[arrow] (cheap) -- node[above, font=\scriptsize] {stream scores} (policy);
-\draw[arrow] (policy) -- node[above, font=\scriptsize] {look actions} (vlm);
+\draw[arrow] (cheap) -- (policy);
+\draw[arrow] (policy) -- (vlm);
 \draw[arrow] (vlm) -- (report);
 \draw[arrow] (vlm.south) |- (memory.east);
-\draw[arrow] (memory.west) -| (policy.south);
+\draw[arrow] (memory.north) -- (policy.south);
 \draw[arrow] (cheap.south) |- (memory.west);
 \end{tikzpicture}

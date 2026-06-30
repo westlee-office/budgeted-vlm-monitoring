@@ -33,9 +33,15 @@ ICLR primary, CVPR strong secondary 전략으로 paper를 준비한다.
 - generated figures:
   - `paper/iclr2027/figures/architecture_tikz.tex`
   - `paper/iclr2027/figures/frontier_tikz.tex`
+  - `paper/iclr2027/figures/recall_gain_tikz.tex`
   - `paper/iclr2027/figures/ttd_cdf_tikz.tex`
+  - `paper/iclr2027/figures/fa_recall_tikz.tex`
   - `paper/iclr2027/figures/stream_scaling_tikz.tex`
+  - `paper/iclr2027/figures/dense_cost_scaling_tikz.tex`
+  - `paper/iclr2027/figures/retention_scaling_tikz.tex`
+  - `paper/iclr2027/figures/margin_scaling_tikz.tex`
   - `paper/iclr2027/figures/timeline_tikz.tex`
+  - `paper/iclr2027/figures/timeline_counts_tikz.tex`
 - PDF build verified with `tectonic main.tex`.
 
 주의:
@@ -141,6 +147,6 @@ Commits:
 상태:
 
 - Tests: 12 passed.
-- PDF: built successfully; current answer-first draft is 14 pages and about 5,828 extracted words with 64 cited references.
+- PDF: built successfully; current answer-first draft is 14 pages and about 6,034 extracted words with 64 cited references.
 - Git/GitHub: private remote exists and `main` has been pushed.
 - Remaining blocker: none for repository setup. The research blocker is replacing assumed answer-first numbers with real UCF/XD/stress-track experiment results.
