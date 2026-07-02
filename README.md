@@ -15,6 +15,7 @@ The core research question is:
 
 ## What Is Here
 
+- `AGENTS.md`: first-read handoff guide for Codex/agent sessions on an experiment server.
 - `paper/iclr2027/`: answer-first paper draft written as if the full experiment table is available.
 - `docs/EXPERIMENT_PLAN_KO.md`: dataset, benchmark, experiment, and GPU-hour plan.
 - `docs/SERVER_RUNBOOK_KO.md`: commands for running the suite on a GPU server.
