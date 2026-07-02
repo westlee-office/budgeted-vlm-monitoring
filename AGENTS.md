@@ -30,6 +30,7 @@ Known limitations:
 - UCF-Crime/XD-Violence dataset-specific raw annotation converters are not implemented yet.
 - Real Qwen/LLaVA video VLM backend runner is not implemented yet; the current path supports cached verifier outputs and external prediction adapters.
 - `simulated_vlm_fallback=True` exists for smoke tests. Real experiments must use `--no-simulated-vlm-fallback`.
+- Real-data runs should pass `scripts/validate_dataset_csvs.py` before multiplexing and `scripts/validate_vlm_cache.py` before `run_grid.py`.
 - The paper is not yet in official ICLR/CVPR style.
 
 ## First Commands On A Server
@@ -153,6 +154,14 @@ python3 scripts/merge_signal_csvs.py \
   --output-csv data/features/ucf_signals.csv \
   --round-timestep 1
 
+python3 scripts/validate_dataset_csvs.py \
+  --videos data/manifests/ucf_videos.csv \
+  --events data/manifests/ucf_events.csv \
+  --signals data/features/ucf_signals.csv \
+  --path-root . \
+  --check-paths \
+  --output data/manifests/ucf_validation_report.json
+
 python3 scripts/multiplex_dataset.py \
   --videos-csv data/manifests/ucf_videos.csv \
   --events-csv data/manifests/ucf_events.csv \
@@ -179,8 +188,14 @@ python3 scripts/build_vlm_query_pool.py \
 python3 scripts/build_vlm_cache_from_predictions.py \
   --query-pool data/vlm_cache/ucf_query_pool.jsonl \
   --predictions data/vlm_cache/ucf_vlm_predictions.jsonl \
-  --output data/vlm_cache/ucf_crime_multistream.jsonl \
+  --output data/vlm_cache/ucf_crime_multistream_128.jsonl \
   --model qwen2.5-vl-7b
+
+python3 scripts/validate_vlm_cache.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --cache data/vlm_cache/ucf_crime_multistream_128.jsonl \
+  --require-provenance \
+  --output data/vlm_cache/ucf_cache_validation_report.json
 ```
 
 Run real grid:
@@ -191,6 +206,7 @@ python3 scripts/run_grid.py \
   --manifest-dir data/manifests \
   --vlm-cache-dir data/vlm_cache \
   --no-simulated-vlm-fallback \
+  --stream-counts 128 \
   --output-dir results/grid
 ```
 
@@ -227,7 +243,7 @@ Recommended order:
 2. Implement dataset-specific converters:
    - `scripts/convert_ucf_crime.py`
    - `scripts/convert_xd_violence.py`
-3. Validate normalized CSV output:
+3. Validate normalized CSV output with `scripts/validate_dataset_csvs.py`:
    - video count
    - event count
    - duration histogram
@@ -236,8 +252,10 @@ Recommended order:
 4. Run cheap feature extraction for a small subset.
 5. Generate a small real-data multiplexed manifest and run a real smoke grid.
 6. Build or adapt a real VLM verifier cache path.
-7. Run full core grid with `--no-simulated-vlm-fallback`.
-8. Replace answer-first numbers in the paper only after result provenance is recorded.
+7. Validate VLM cache coverage with `scripts/validate_vlm_cache.py`.
+8. Run full core grid with `--no-simulated-vlm-fallback`.
+9. Use stream-count-specific manifests/caches such as `ucf_crime_multistream_32.json` and `ucf_crime_multistream_32.jsonl`.
+10. Replace answer-first numbers in the paper only after result provenance is recorded.
 
 ## Do Not Do
 

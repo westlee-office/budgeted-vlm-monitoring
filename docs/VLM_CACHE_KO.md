@@ -2,6 +2,8 @@
 
 실제 논문 실험에서는 expensive VLM call을 매번 online으로 실행하지 말고 JSONL cache로 저장한다. BMVM runner는 `--vlm-cache` 또는 `--vlm-cache-dir`를 받으면 cache score를 verifier output으로 사용한다.
 
+`--no-simulated-vlm-fallback` 상태에서 cache key가 누락되면 runner는 즉시 실패해야 한다. 누락 query를 score 0으로 조용히 처리하면 불완전한 cache가 recall 하락처럼 보이므로, paper-quality run 전에 반드시 cache coverage를 검증한다.
+
 ## JSONL Schema
 
 각 줄은 하나의 VLM query 결과다.
@@ -37,7 +39,7 @@ python3 scripts/run_experiment.py \
 
 ## Grid
 
-`--vlm-cache-dir`는 `<dataset>.jsonl` 파일을 찾는다.
+`--vlm-cache-dir`는 stream count가 있으면 우선 `<dataset>_<streams>.jsonl`류 파일을 찾고, 없으면 `<dataset>.jsonl`을 fallback 후보로 본다. `core_grid.json`처럼 `stream_counts`가 있는 grid에서는 manifest/cache를 stream count별로 분리하는 편이 안전하다.
 
 ```bash
 python3 scripts/run_grid.py \
@@ -45,6 +47,18 @@ python3 scripts/run_grid.py \
   --manifest-dir data/manifests \
   --vlm-cache-dir data/vlm_cache \
   --no-simulated-vlm-fallback \
+  --output-dir results/grid
+```
+
+ZIP으로 받은 repo처럼 `.git` metadata가 없는 환경에서는 provenance를 명시한다.
+
+```bash
+python3 scripts/run_grid.py \
+  --config configs/experiments/core_grid.json \
+  --manifest-dir data/manifests \
+  --vlm-cache-dir data/vlm_cache \
+  --no-simulated-vlm-fallback \
+  --source-commit <github-main-commit> \
   --output-dir results/grid
 ```
 
@@ -80,6 +94,18 @@ python3 scripts/build_vlm_query_pool.py \
 ```
 
 이 query pool을 실제 VLM batch inference로 처리한 뒤, 같은 `(episode_id, stream_id, t_s)` key에 `score`를 추가한 JSONL을 `--vlm-cache`로 넣는다.
+
+Cache coverage 검증:
+
+```bash
+python3 scripts/validate_vlm_cache.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --cache data/vlm_cache/ucf_crime_multistream_128.jsonl \
+  --require-provenance \
+  --output data/vlm_cache/ucf_cache_validation_report.json
+```
+
+검증 report에서 `coverage`가 1.0이고 `errors=[]`인 상태에서만 real grid를 실행한다.
 
 ## CLIP Verifier Baseline
 

@@ -58,13 +58,15 @@ results/
 1. 원본 데이터 다운로드 및 라이선스 확인.
 2. dataset-specific annotation을 공통 `videos.csv`, `events.csv`로 변환.
 3. cheap feature cache를 `signals.csv`로 생성.
-4. `scripts/multiplex_dataset.py`로 BMVM manifest 생성.
-5. `scripts/build_vlm_query_pool.py`로 VLM batch candidate 생성.
-6. VLM verifier batch job으로 `data/vlm_cache/<dataset>.jsonl` 생성.
-7. `scripts/run_grid.py`로 policies x budgets x seeds 실험 실행.
-8. `scripts/update_paper_results_from_grid.py`로 실제 결과를 paper JSON에 반영.
-9. `python3 scripts/make_paper_assets.py`.
-10. `cd paper/iclr2027 && tectonic main.tex`.
+4. `scripts/validate_dataset_csvs.py`로 source CSV 무결성 검증.
+5. `scripts/multiplex_dataset.py`로 BMVM manifest 생성.
+6. `scripts/build_vlm_query_pool.py`로 VLM batch candidate 생성.
+7. VLM verifier batch job으로 `data/vlm_cache/<dataset>_<streams>.jsonl` 생성.
+8. `scripts/validate_vlm_cache.py`로 query pool/cache coverage 검증.
+9. `scripts/run_grid.py`로 policies x streams x budgets x seeds 실험 실행.
+10. `scripts/update_paper_results_from_grid.py`로 실제 결과를 paper JSON에 반영.
+11. `python3 scripts/make_paper_assets.py`.
+12. `cd paper/iclr2027 && tectonic main.tex`.
 
 ## 4.1 Manifest Multiplexing
 
@@ -89,6 +91,18 @@ python3 scripts/merge_signal_csvs.py \
   --inputs data/features/ucf_motion.csv data/features/ucf_clip.csv \
   --output-csv data/features/ucf_signals.csv \
   --round-timestep 1
+```
+
+CSV validator:
+
+```bash
+python3 scripts/validate_dataset_csvs.py \
+  --videos data/manifests/ucf_videos.csv \
+  --events data/manifests/ucf_events.csv \
+  --signals data/features/ucf_signals.csv \
+  --path-root . \
+  --check-paths \
+  --output data/manifests/ucf_validation_report.json
 ```
 
 ```bash
@@ -135,8 +149,18 @@ python3 scripts/run_clip_verifier_cache.py \
 python3 scripts/build_vlm_cache_from_predictions.py \
   --query-pool data/vlm_cache/ucf_query_pool.jsonl \
   --predictions data/vlm_cache/ucf_vlm_predictions.jsonl \
-  --output data/vlm_cache/ucf_crime_multistream.jsonl \
+  --output data/vlm_cache/ucf_crime_multistream_128.jsonl \
   --model qwen2.5-vl-7b
+```
+
+Cache validator:
+
+```bash
+python3 scripts/validate_vlm_cache.py \
+  --query-pool data/vlm_cache/ucf_query_pool.jsonl \
+  --cache data/vlm_cache/ucf_crime_multistream_128.jsonl \
+  --require-provenance \
+  --output data/vlm_cache/ucf_cache_validation_report.json
 ```
 
 ```bash
@@ -154,6 +178,7 @@ python3 scripts/run_grid.py \
   --manifest-dir data/manifests \
   --vlm-cache-dir data/vlm_cache \
   --no-simulated-vlm-fallback \
+  --stream-counts 128 \
   --output-dir results/grid
 ```
 
@@ -172,6 +197,19 @@ SLURM cluster:
 
 ```bash
 sbatch scripts/slurm/run_core_grid.sbatch
+```
+
+Smoke용 SLURM run은 simulated fallback을 명시적으로 켠다.
+
+```bash
+SIM_FALLBACK=1 LIMIT=4 sbatch scripts/slurm/run_core_grid.sbatch
+```
+
+실제 H200/A100 partition이나 constraint는 cluster 정책에 맞춰 `sbatch` 옵션으로 넘긴다.
+
+```bash
+sbatch -p h200 --gres=gpu:h200:1 scripts/slurm/run_core_grid.sbatch
+sbatch -p a100 --gres=gpu:a100:1 scripts/slurm/run_core_grid.sbatch
 ```
 
 ## 5. 결과 관리 규칙
@@ -194,6 +232,6 @@ sbatch scripts/slurm/run_core_grid.sbatch
 nvidia-smi
 python3 --version
 ffmpeg -version
-git rev-parse HEAD
+git rev-parse HEAD  # ZIP이면 생략하고 run_grid.py --source-commit 사용
 python3 -m unittest discover -s tests
 ```

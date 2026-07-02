@@ -23,6 +23,9 @@ def run_episode(
     vlm_cache: Optional[VLMCache] = None,
     simulated_vlm_fallback: bool = True,
 ) -> EpisodeResult:
+    if not simulated_vlm_fallback and vlm_cache is None:
+        raise ValueError("vlm_cache is required when simulated_vlm_fallback=False")
+
     policy.reset()
     detected = {}
     false_alarms = 0
@@ -65,7 +68,10 @@ def run_episode(
             elif simulated_vlm_fallback:
                 verifier_score = _vlm_verifier_score(signal.cheap_score, len(active_events))
             else:
-                verifier_score = 0.0
+                raise KeyError(
+                    "Missing VLM cache record for "
+                    f"episode_id={episode.episode_id} stream_id={query.stream_id} t_s={t_s}"
+                )
             is_positive = verifier_score >= detection_threshold
             if active_events and is_positive:
                 for event in active_events:
